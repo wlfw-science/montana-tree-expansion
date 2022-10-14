@@ -1,0 +1,695 @@
+ #map [product_type='points'] {
+     marker-fill: gray;
+     marker-width: 8;
+     marker-allow-overlap: true;
+     marker-line-opacity: 0.8;
+ }
+
+ #map[uncertainty_m>=160000][product_type='buffer'] {
+      polygon-opacity: 0.1;
+ }
+
+ #map[uncertainty_m<=160000][product_type='buffer'] {
+     polygon-opacity: 0.2;
+ }
+
+ #map[uncertainty_m<=80000][product_type='buffer'] {
+     polygon-opacity: 0.3;
+ }
+
+ #map[uncertainty_m<=40000][product_type='buffer'] {
+     polygon-opacity: 0.4;
+ }
+
+ #map[uncertainty_m<=20000][product_type='buffer'] {
+     polygon-opacity: 0.5;
+ }
+
+ #map[uncertainty_m<=5000][product_type='buffer'] {
+     polygon-opacity: 0.7;
+ }
+
+ #map[uncertainty_m<=2500][product_type='buffer'] {
+     polygon-opacity: 0.8;
+ }
+
+ #map[uncertainty_m<=1250][product_type='buffer'] {
+     polygon-opacity: 0.9;
+ }
+
+ #map[uncertainty_m<=625][product_type='buffer'] {
+     polygon-opacity: 1;
+ }
+
+ /* I'm sorry */
+
+#map [product_type='points'] {
+     marker-fill: gray;
+     marker-width: 8;
+     marker-allow-overlap: true;
+     marker-line-opacity: 0.8;
+ }
+
+ #map [product_type='buffer'] {
+    polygon-fill: gray;
+ }
+
+ #map[uncertainty_m>=160000][product_type='buffer'] {
+      polygon-opacity: 0.1;
+ }
+
+ #map[uncertainty_m<=160000][product_type='buffer'] {
+     polygon-opacity: 0.2;
+ }
+
+ #map[uncertainty_m<=80000][product_type='buffer'] {
+     polygon-opacity: 0.3;
+ }
+
+ #map[uncertainty_m<=40000][product_type='buffer'] {
+     polygon-opacity: 0.4;
+ }
+
+ #map[uncertainty_m<=20000][product_type='buffer'] {
+     polygon-opacity: 0.5;
+ }
+
+ #map[uncertainty_m<=5000][product_type='buffer'] {
+     polygon-opacity: 0.7;
+ }
+
+ #map[uncertainty_m<=2500][product_type='buffer'] {
+     polygon-opacity: 0.8;
+ }
+
+ #map[uncertainty_m<=1250][product_type='buffer'] {
+     polygon-opacity: 0.9;
+ }
+
+ #map[uncertainty_m<=625][product_type='buffer'] {
+     polygon-opacity: 1;
+ }
+
+ /* I'm sorry */
+
+ #map [product_type='points'][color_group=1] {
+     marker-fill: #A6CEE3;
+ }
+
+ #map [product_type='points'][color_group=2] {
+     marker-fill: #1F78B4;
+ }
+
+ #map [product_type='points'][color_group=3] {
+     marker-fill: #B2DF8A;
+ }
+
+ #map [product_type='points'][color_group=4] {
+     marker-fill: #33A02C;
+ }
+
+ #map [product_type='points'][color_group=5] {
+     marker-fill: #FB9A99;
+ }
+
+ #map [product_type='points'][color_group=6] {
+     marker-fill: #E31A1C;
+ }
+
+ #map [product_type='points'][color_group=7] {
+     marker-fill: #FDBF6F;
+ }
+
+ #map [product_type='points'][color_group=8] {
+     marker-fill: #CAB2D6;
+ }
+
+ #map [product_type='points'][color_group=9] {
+     marker-fill: #6A3D9A;
+ }
+
+ #map [product_type='points'][color_group=10] {
+     marker-fill: #FFFF99;
+ }
+
+ #map [product_type='points'][color_group=11] {
+     marker-fill: #B15928;
+ }
+
+ #map [product_type='points'][color_group=12] {
+     marker-fill: #B0D8ED;
+ }
+
+ #map [product_type='points'][color_group=13] {
+     marker-fill: #2982BE;
+ }
+
+ #map [product_type='points'][color_group=14] {
+     marker-fill: #BCE994;
+ }
+
+ #map [product_type='points'][color_group=15] {
+     marker-fill: #3DAA36;
+ }
+
+ #map [product_type='points'][color_group=16] {
+     marker-fill: #ED2426;
+ }
+
+ #map [product_type='points'][color_group=17] {
+     marker-fill: #D4BCE0;
+ }
+
+ #map [product_type='points'][color_group=18] {
+     marker-fill: #7447A4;
+ }
+
+ #map [product_type='points'][color_group=19] {
+     marker-fill: #BB6332;
+ }
+
+ #map [product_type='points'][color_group=20] {
+     marker-fill: #BAE2F7;
+ }
+
+ #map [product_type='points'][color_group=21] {
+     marker-fill: #338CC8;
+ }
+
+ #map [product_type='points'][color_group=22] {
+     marker-fill: #C6F39E;
+ }
+
+ #map [product_type='points'][color_group=23] {
+     marker-fill: #47B440;
+ }
+
+ #map [product_type='points'][color_group=24] {
+     marker-fill: #10AEAD;
+ }
+
+ #map [product_type='points'][color_group=25] {
+     marker-fill: #F72E30;
+ }
+
+ #map [product_type='points'][color_group=26] {
+     marker-fill: #12D383;
+ }
+
+ #map [product_type='points'][color_group=27] {
+     marker-fill: #149314;
+ }
+
+ #map [product_type='points'][color_group=28] {
+     marker-fill: #DEC6EA;
+ }
+
+ #map [product_type='points'][color_group=29] {
+     marker-fill: #7E51AE;
+ }
+
+ #map [product_type='points'][color_group=30] {
+     marker-fill: #1414AD;
+ }
+
+ #map [product_type='points'][color_group=31] {
+     marker-fill: #C56D3C;
+ }
+
+ #map [product_type='points'][color_group=32] {
+     marker-fill: #3D96D2;
+ }
+
+ #map [product_type='points'][color_group=33] {
+     marker-fill: #D0FDA8;
+ }
+
+ #map [product_type='points'][color_group=34] {
+     marker-fill: #51BE4A;
+ }
+
+ #map [product_type='points'][color_group=35] {
+     marker-fill: #1AB8B7;
+ }
+
+ #map [product_type='points'][color_group=36] {
+     marker-fill: #1CDD8D;
+ }
+
+ #map [product_type='points'][color_group=37] {
+     marker-fill: #1E9D1E;
+ }
+
+ #map [product_type='points'][color_group=38] {
+     marker-fill: #E8D0F4;
+ }
+
+ #map [product_type='points'][color_group=39] {
+     marker-fill: #885BB8;
+ }
+
+ #map [product_type='points'][color_group=40] {
+     marker-fill: #1E1EB7;
+ }
+
+ #map [product_type='points'][color_group=41] {
+     marker-fill: #CF7746;
+ }
+
+ #map [product_type='points'][color_group=42] {
+     marker-fill: #47A0DC;
+ }
+
+ #map [product_type='points'][color_group=43] {
+     marker-fill: #5BC854;
+ }
+
+ #map [product_type='points'][color_group=44] {
+     marker-fill: #24C2C1;
+ }
+
+ #map [product_type='points'][color_group=45] {
+     marker-fill: #26E797;
+ }
+
+ #map [product_type='points'][color_group=46] {
+     marker-fill: #28A728;
+ }
+
+ #map [product_type='points'][color_group=47] {
+     marker-fill: #F2DAFE;
+ }
+
+ #map [product_type='points'][color_group=48] {
+     marker-fill: #9265C2;
+ }
+
+ #map [product_type='points'][color_group=49] {
+     marker-fill: #2828C1;
+ }
+
+ #map [product_type='points'][color_group=50] {
+     marker-fill: #D98150;
+ }
+
+ #map [product_type='points'][color_group=51] {
+     marker-fill: #51AAE6;
+ }
+
+ #map [product_type='points'][color_group=52] {
+     marker-fill: #E412BC;
+ }
+
+ #map [product_type='points'][color_group=53] {
+     marker-fill: #65D25E;
+ }
+
+ #map [product_type='points'][color_group=54] {
+     marker-fill: #2ECCCB;
+ }
+
+ #map [product_type='points'][color_group=55] {
+     marker-fill: #164C4E;
+ }
+
+ #map [product_type='points'][color_group=56] {
+     marker-fill: #30F1A1;
+ }
+
+ #map [product_type='points'][color_group=57] {
+     marker-fill: #32B132;
+ }
+
+ #map [product_type='points'][color_group=58] {
+     marker-fill: #9C6FCC;
+ }
+
+ #map [product_type='points'][color_group=59] {
+     marker-fill: #3232CB;
+ }
+
+ #map [product_type='points'][color_group=60] {
+     marker-fill: #E38B5A;
+ }
+
+ #map [product_type='points'][color_group=61] {
+     marker-fill: #5BB4F0;
+ }
+
+ #map [product_type='points'][color_group=62] {
+     marker-fill: #EE1CC6;
+ }
+
+ #map [product_type='points'][color_group=63] {
+     marker-fill: #6FDC68;
+ }
+
+ #map [product_type='points'][color_group=64] {
+     marker-fill: #38D6D5;
+ }
+
+ #map [product_type='points'][color_group=65] {
+     marker-fill: #205658;
+ }
+
+ #map [product_type='points'][color_group=66] {
+     marker-fill: #3AFBAB;
+ }
+
+ #map [product_type='points'][color_group=67] {
+     marker-fill: #3CBB3C;
+ }
+
+ #map [product_type='points'][color_group=68] {
+     marker-fill: #A679D6;
+ }
+
+ #map [product_type='points'][color_group=69] {
+     marker-fill: #3C3CD5;
+ }
+
+ #map [product_type='points'][color_group=70] {
+     marker-fill: #ED9564;
+ }
+
+ #map [product_type='points'][color_group=71] {
+     marker-fill: #EC152A;
+ }
+
+ #map [product_type='points'][color_group=72] {
+     marker-fill: #65BEFA;
+ }
+
+ #map [product_type='points'][color_group=73] {
+     marker-fill: #F826D0;
+ }
+
+ #map [product_type='points'][color_group=74] {
+     marker-fill: #79E672;
+ }
+
+ #map [product_type='points'][color_group=75] {
+     marker-fill: #42E0DF;
+ }
+
+ #map [product_type='points'][color_group=76] {
+     marker-fill: #2A6062;
+ }
+
+ #map [product_type='points'][color_group=77] {
+     marker-fill: #46C546;
+ }
+
+ #map [product_type='points'][color_group=78] {
+     marker-fill: #11F81D;
+ }
+
+ #map [product_type='points'][color_group=79] {
+     marker-fill: #B083E0;
+ }
+
+ #map [product_type='points'][color_group=80] {
+     marker-fill: #4646DF;
+ }
+
+ #map [product_type='points'][color_group=81] {
+     marker-fill: #F79F6E;
+ }
+
+ #map [product_type='points'][color_group=82] {
+     marker-fill: #F61F34;
+ }
+
+ #map [product_type='points'][color_group=83] {
+     marker-fill: #83F07C;
+ }
+
+ #map [product_type='points'][color_group=84] {
+     marker-fill: #4CEAE9;
+ }
+
+ #map [product_type='points'][color_group=85] {
+     marker-fill: #346A6C;
+ }
+
+ #map [product_type='points'][color_group=86] {
+     marker-fill: #4E10BF;
+ }
+
+ #map [product_type='points'][color_group=87] {
+     marker-fill: #50CF50;
+ }
+
+ #map [product_type='points'][color_group=88] {
+     marker-fill: #BA8DEA;
+ }
+
+ #map [product_type='points'][color_group=89] {
+     marker-fill: #5050E9;
+ }
+
+ #map [product_type='points'][color_group=90] {
+     marker-fill: #8DFA86;
+ }
+
+ #map [product_type='points'][color_group=91] {
+     marker-fill: #56F4F3;
+ }
+
+ #map [product_type='points'][color_group=92] {
+     marker-fill: #3E7476;
+ }
+
+ #map [product_type='points'][color_group=93] {
+     marker-fill: #581AC9;
+ }
+
+ #map [product_type='points'][color_group=94] {
+     marker-fill: #5AD95A;
+ }
+
+ #map [product_type='points'][color_group=95] {
+     marker-fill: #C497F4;
+ }
+
+ #map [product_type='points'][color_group=96] {
+     marker-fill: #5A5AF3;
+ }
+
+ #map [product_type='points'][color_group=97] {
+     marker-fill: #83DC19;
+ }
+
+ #map [product_type='points'][color_group=98] {
+     marker-fill: #1744EE;
+ }
+
+ #map [product_type='points'][color_group=99] {
+     marker-fill: #60FEFD;
+ }
+
+ #map [product_type='points'][color_group=100] {
+     marker-fill: #487E80;
+ }
+
+ #map [product_type='points'][color_group=101] {
+     marker-fill: #6224D3;
+ }
+
+ #map [product_type='points'][color_group=102] {
+     marker-fill: #64E364;
+ }
+
+ #map [product_type='points'][color_group=103] {
+     marker-fill: #2F173B;
+ }
+
+ #map [product_type='points'][color_group=104] {
+     marker-fill: #CEA1FE;
+ }
+
+ #map [product_type='points'][color_group=105] {
+     marker-fill: #6464FD;
+ }
+
+ #map [product_type='points'][color_group=106] {
+     marker-fill: #16BD8C;
+ }
+
+ #map [product_type='points'][color_group=107] {
+     marker-fill: #153D52;
+ }
+
+ #map [product_type='points'][color_group=108] {
+     marker-fill: #8DE623;
+ }
+
+ #map [product_type='points'][color_group=109] {
+     marker-fill: #214EF8;
+ }
+
+ #map [product_type='points'][color_group=110] {
+     marker-fill: #52888A;
+ }
+
+ #map [product_type='points'][color_group=111] {
+     marker-fill: #6C2EDD;
+ }
+
+ #map [product_type='points'][color_group=112] {
+     marker-fill: #6EED6E;
+ }
+
+ #map [product_type='points'][color_group=113] {
+     marker-fill: #392145;
+ }
+
+ #map [product_type='points'][color_group=114] {
+     marker-fill: #20C796;
+ }
+
+ #map [product_type='points'][color_group=115] {
+     marker-fill: #1F475C;
+ }
+
+ #map [product_type='points'][color_group=116] {
+     marker-fill: #97F02D;
+ }
+
+ #map [product_type='points'][color_group=117] {
+     marker-fill: #AB19A4;
+ }
+
+ #map [product_type='points'][color_group=118] {
+     marker-fill: #741312;
+ }
+
+ #map [product_type='points'][color_group=119] {
+     marker-fill: #5C9294;
+ }
+
+ #map [product_type='points'][color_group=120] {
+     marker-fill: #7638E7;
+ }
+
+ #map [product_type='points'][color_group=121] {
+     marker-fill: #78F778;
+ }
+
+ #map [product_type='points'][color_group=122] {
+     marker-fill: #432B4F;
+ }
+
+ #map [product_type='points'][color_group=123] {
+     marker-fill: #E2B513;
+ }
+
+ #map [product_type='points'][color_group=124] {
+     marker-fill: #787812;
+ }
+
+ #map [product_type='points'][color_group=125] {
+     marker-fill: #2AD1A0;
+ }
+
+ #map [product_type='points'][color_group=126] {
+     marker-fill: #295166;
+ }
+
+ #map [product_type='points'][color_group=127] {
+     marker-fill: #A1FA37;
+ }
+
+ #map [product_type='points'][color_group=128] {
+     marker-fill: #B523AE;
+ }
+
+ #map [product_type='points'][color_group=129] {
+     marker-fill: #7E1D1C;
+ }
+
+ #map [product_type='points'][color_group=130] {
+     marker-fill: #669C9E;
+ }
+
+ #map [product_type='points'][color_group=131] {
+     marker-fill: #8042F1;
+ }
+
+ #map [product_type='points'][color_group=132] {
+     marker-fill: #4D3559;
+ }
+
+ #map [product_type='points'][color_group=133] {
+     marker-fill: #ECBF1D;
+ }
+
+ #map [product_type='points'][color_group=134] {
+     marker-fill: #82821C;
+ }
+
+ #map [product_type='points'][color_group=135] {
+     marker-fill: #34DBAA;
+ }
+
+ #map [product_type='points'][color_group=136] {
+     marker-fill: #335B70;
+ }
+
+ #map [product_type='points'][color_group=137] {
+     marker-fill: #3F6C17;
+ }
+
+ #map [product_type='points'][color_group=138] {
+     marker-fill: #BF2DB8;
+ }
+
+ #map [product_type='points'][color_group=139] {
+     marker-fill: #882726;
+ }
+
+ #map [product_type='points'][color_group=140] {
+     marker-fill: #70A6A8;
+ }
+
+ #map [product_type='points'][color_group=141] {
+     marker-fill: #8A4CFB;
+ }
+
+ #map [product_type='points'][color_group=142] {
+     marker-fill: #573F63;
+ }
+
+ #map [product_type='points'][color_group=143] {
+     marker-fill: #F6C927;
+ }
+
+ #map [product_type='points'][color_group=144] {
+     marker-fill: #8C8C26;
+ }
+
+ #map [product_type='points'][color_group=145] {
+     marker-fill: #3EE5B4;
+ }
+
+ #map [product_type='points'][color_group=146] {
+     marker-fill: #3D657A;
+ }
+
+ #map [product_type='points'][color_group=147] {
+     marker-fill: #497621;
+ }
+
+ #map [product_type='points'][color_group=148] {
+     marker-fill: #C937C2;
+ }
+
+ #map [product_type='points'][color_group=149] {
+     marker-fill: #923130;
+ }
+
+ #map [product_type='points'][color_group=150] {
+     marker-fill: #7AB0B2;
+ }
+
+ 

@@ -1,0 +1,117 @@
+:host {
+  text-align: center;
+  overflow: hidden;
+  flex: 1;
+}
+
+
+.veg-help {
+  margin-right:25px;
+}
+
+.mat-select-panel {
+  max-height: 500px;
+}
+.year-select {
+  width: 55px;
+}
+
+.saveCheckbox {
+  font-size: 11pt;
+}
+
+.overlay-switcher {
+  white-space: nowrap;
+}
+
+.overlay-switcher  mat-form-field {
+    margin: 5px;
+}
+
+.year-select {
+  width: 60px;
+}
+.year-select mat-select {
+    width: 60px !important;   
+}
+
+div.mat-form-field-infix {
+    width: 60px !important;
+}
+
+.help {
+  width: 22px;
+}
+
+.toggles {
+  margin-left: 35px;
+  padding:4px;
+  text-align: left;
+  width: 535px;
+}
+.opacity-container {
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+}
+
+.allNoneToggle {
+  display: inline-block;
+  border: 1pt solid gray;
+  padding: 3pt 1.5pt;
+  margin: 2pt;
+  color: gray;
+  cursor: pointer;
+  cursor: hand;
+  text-align: center
+}
+
+.years {
+  margin-left: 40px;
+}
+
+.year.active {
+    border-color: #CF9C00 !important;
+    color: #CF9C00 !important;
+}
+
+.year.selected {
+    border-color: #CF9C00 !important;
+    color: #FFF !important;
+    background-color: #CF9C00!important;
+}
+
+
+.hide {
+  display: none
+}
+
+.progress-bar {
+  text-align: center;
+  margin-left: 120px;
+}
+
+.landcover-analysis-buttons {
+  text-align: center;
+  margin: 10pt;
+}
+
+.landcover-analysis-buttons button {
+  margin: 2pt;
+  margin-top: 10pt;
+  margin-bottom: 10pt;
+}
+
+.chart-container {
+  padding: 5pt;
+}
+
+app-landcover-trend-chart {
+  min-height: 300px;
+  max-width: 300px;
+}
+
+.legend-container {
+  width: 100%;
+  text-align: center;
+}

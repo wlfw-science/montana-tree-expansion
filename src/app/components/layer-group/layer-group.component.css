@@ -1,0 +1,20 @@
+:host { 
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 10px;
+}
+app-year-selector { 
+    flex: 1
+}
+table { 
+    margin:auto;
+}
+.control-cell {
+    text-align: left;
+    width: fit-content;
+    height: 35px;    
+}
+.legend-cell {
+    text-align: center;
+}

@@ -1,0 +1,23 @@
+:host {
+    width:100%;
+    
+    background-image: url('img/rangeland.jpg');
+    background-size: 100%;
+    background-position: center;
+    display: flex;
+    border-bottom: 5pt solid #e98d58;
+    vertical-align: center;   
+}
+
+
+.title {
+    flex: 1;    
+    color: white;
+    font-size: 25pt;
+    padding: 4pt;
+    text-shadow: black;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&1+0,1+0,0+100 */
+    background: -moz-linear-gradient(left,  rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left,  rgba(0,0,0,1) 0%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right,  rgba(0,0,0,1) 0%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}

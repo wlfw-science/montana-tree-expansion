@@ -1,0 +1,15 @@
+<table>
+    <ng-container *ngFor='let overlay of overlays'>
+      <tr>
+        <td class="control-cell"><app-popover *ngIf="overlay.help" class="help">
+            {{overlay.help}}
+            <a href="https://rangelands.app/products/">More information</a></app-popover></td>
+        <td class="control-cell"><app-overlay-toggle-control [overlay]="overlay"></app-overlay-toggle-control></td>
+        <td class="control-cell">{{overlay.name}}</td>
+        <td class="control-cell"><app-opacity-control  [overlay]="overlay"></app-opacity-control></td>
+        <td class="year-cell"><app-year-selector   [overlay]="overlay"></app-year-selector></td>
+      </tr>
+      <tr *ngIf="overlay?.type?.legend && overlay.visible">
+        <td colspan="6" class="legend-cell"><app-overlay-legend [overlay]="overlay"></app-overlay-legend></td></tr>
+    </ng-container>
+</table>

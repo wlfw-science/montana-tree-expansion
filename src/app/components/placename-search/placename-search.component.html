@@ -1,0 +1,16 @@
+<mat-form-field class="example-full-width">
+  <input #term matInput placeholder="Search for a location" 
+    aria-label="Search for a location" 
+    [matAutocomplete]="auto" 
+    [formControl]="placeCtrl">
+  <mat-autocomplete #auto="matAutocomplete" 
+   
+    autoActiveFirstOption="true" [displayWith]="formatPlace">
+    <mat-option *ngFor="let place of places | async" [value]="place"
+    
+    (onSelectionChange)="selectPlace($event.source.value)"
+    >
+      <span [innerHTML]="formatPlace(place) | highlight:term.value"></span> 
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

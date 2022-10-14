@@ -1,0 +1,50 @@
+:host {
+    width: 205px;
+    display: inline-block;
+    padding: 5px;
+    font-size: small;
+}
+.legend {
+    flex: 3;
+    width: 250px;
+    height: 20px;  
+    border: 1pt solid darkgrey; 
+}
+.legend-container {
+    display: flex
+}
+.min-label {
+    flex: 1;
+    padding: 5px;
+    white-space: nowrap;
+}
+.max-label {
+    flex: 1;
+    padding: 5px;
+    white-space: nowrap;
+}
+.legend-label {
+    white-space: nowrap;
+}
+
+.categorical-legend {
+    display: flex;
+    flex-direction: row;
+}
+.category {
+    flex: 1;
+}
+.category-label {
+    width: 100%;
+    white-space: nowrap;
+    overflow-x: hidden;
+    height: 20px;
+}
+.category-color {
+    width: 100%;
+    height: 20px;
+    border:  1pt solid darkgrey; 
+}
+.legend {
+    min-width: 140px;
+}

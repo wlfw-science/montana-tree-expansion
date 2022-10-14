@@ -1,0 +1,91 @@
+
+import {Component} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import * as Geonames from 'geonames.js';
+
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
+import {startWith} from 'rxjs/operators/startWith';
+import {debounceTime} from 'rxjs/operators/debounceTime';
+import {switchMap} from 'rxjs/operators/switchMap';
+
+
+import {map} from 'rxjs/operators/map';
+import {MapStateService} from '../../services/map-state.service';
+
+export class Place {
+  constructor(public name: string, public geometry: string) { }
+}
+
+
+@Component({
+  selector: 'app-placename-search',
+  templateUrl: './placename-search.component.html',
+  styleUrls: ['./placename-search.component.css']
+})
+export class PlacenameSearchComponent {
+  placeCtrl: FormControl;
+  placesSubject: Subject<any[]>;
+  places: Observable<any[]>;
+  geonames: Geonames;
+
+  constructor(private mapState: MapStateService) {
+    this.placeCtrl = new FormControl();
+    this.placesSubject = new Subject<any[]>()
+    this.geonames = new Geonames({username: 'plutonic', lan: 'en', encoding: 'JSON'});
+    this.placeCtrl.valueChanges
+      .pipe(debounceTime(500)).subscribe(term => {
+        if (term) {
+          this.geonames
+            .search({
+              name_startsWith: term,
+              isNameRequired: true,
+              country: 'US',
+              featureClasses: ['A', 'H'],
+              north: 49, south: 15, east: -93.5, west: -125 })
+            .then(this.setPlaces.bind(this))
+        } else {
+          this.setPlaces(null)
+        }}
+    );
+    this.places = this.placesSubject.asObservable();
+   }
+
+  setPlaces(places: any) {
+    if (places && places.geonames) {
+      const states = ['CA', 'OR', 'WA', 'NV', 'ID', 'UT',
+        'NM', 'AZ', 'MT', 'CO', 'WY', 'ND', 'SD', 'OK', 'KS',
+        'NE', 'TX'];
+      this.placesSubject.next(places.geonames.filter((place) =>
+        states.some((state) => place.adminCode1 === state)
+      ));
+    } else {
+      this.placesSubject.next(null);
+    }
+  }
+
+
+  formatPlace(place: any ): string | undefined {
+    return place ? place.asciiName +
+      ((place.adminTypeName !== 'state') ? ', ' + place.adminCode1 : '') :
+        undefined;
+  }
+
+  selectPlace(place: any) {
+    if (place.bbox) {
+      const bounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(place.bbox.south, place.bbox.west),
+        new google.maps.LatLng(place.bbox.north, place.bbox.east)
+      );
+      this.mapState.setBounds(bounds);
+    } else {
+      const latlng = new google.maps.LatLng(parseFloat(place.lat), parseFloat(place.lng));
+      this.mapState.setCenter(latlng);
+      this.mapState.setZoom(9);
+    }
+  }
+
+
+
+
+}

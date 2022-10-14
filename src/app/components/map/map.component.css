@@ -1,0 +1,11 @@
+.map {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.fade {
+        transition: display 600ms ease-in-out;
+}
+
+#map.pac-item {display: none}

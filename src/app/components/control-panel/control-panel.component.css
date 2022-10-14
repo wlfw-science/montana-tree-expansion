@@ -1,0 +1,14 @@
+:host {
+    width: 400px;
+   
+}
+
+div.control {
+    max-height: 0;
+	transition: max-height 0.4s ;
+}
+
+a.active + div.control  {
+    transition: max-height 0.4s ;
+    max-height: 1000px;
+}

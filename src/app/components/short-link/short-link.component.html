@@ -1,0 +1,7 @@
+<i [matMenuTriggerFor]="menu" matTooltip="Link to this map" class="material-icons" 
+    (click)="showShortUrl()" (menuClosed)="clearShortUrl()">link</i><mat-menu #menu="matMenu" class="shortUrlPopover" >
+      <i  *ngIf="shortUrl" matTooltip="Copy link to clipboard" 
+      matTooltipPosition="above" class="material-icons" 
+      (click)="copyShortUrl()">assignment</i>
+    <input #shortUrlInput *ngIf="shortUrl" type="textarea" size="50" [value]="shortUrl">
+</mat-menu>

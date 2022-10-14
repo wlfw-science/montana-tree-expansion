@@ -1,0 +1,8 @@
+<i [matMenuTriggerFor]="menu" class="icon material-icons">info_outline</i>
+<mat-menu #menu="matMenu" >
+ <div class="popover" (click)="$event.stopPropagation()">
+ <!-- popover content begin -->
+    <ng-content></ng-content>
+ <!-- popover content end  -->
+ </div>
+</mat-menu>

@@ -1,1 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '//fonts.googleapis.com/css?family=Lato';
+@import '//fonts.googleapis.com/css?family=IM+Fell+English';
+@import '//fonts.googleapis.com/icon?family=Material+Icons';
+
+html, body { height: 100%;  min-width: 1080px;
+  min-height: 640px}
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;   height: 100%;
+  width: 100%;}
+
+
+.material-icons {
+  font-size: 36pt;
+}
+.mat-select-panel {
+  max-height: 300px !important;
+}
+.mat-dialog-container {
+  display: flex !important;
+}

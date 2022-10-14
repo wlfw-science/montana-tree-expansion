@@ -1,0 +1,46 @@
+
+ :host {
+     position: relative;
+     overflow: visible;
+     background:rgb(255, 255, 255);
+     border: 0;
+     border-radius: 2px;
+     height: 24px;
+     width: 24px;
+     text-align: center;
+     box-shadow:rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+ }
+input {
+    color: gray;
+    position: relative;
+    bottom: 5px;
+    font-size: 14px;
+    border-radius: 2pt;
+    border: none ! important;
+    box-shadow: none ! important;
+    outline: none ! important;
+}
+
+i {
+    font-size: 18pt !important;
+    cursor: pointer;
+    cursor: hand;
+    color: rgb(86, 86, 86);
+    background-clip: border-box;
+    
+    background-color: rgb(255, 255, 255);
+}
+::ng-deep .shortUrlPopover {
+    min-width: 360px !important;
+    white-space: nowrap !important;
+    overflow: hidden;
+    padding: 3px;
+    margin-right: -2px !important;
+    z-index: 10000000000;
+   
+}
+
+::ng-deep .shortUrlPopover i {
+    font-size: 14pt !important;
+    margin-right: 4px; 
+}

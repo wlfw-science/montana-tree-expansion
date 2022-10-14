@@ -1,0 +1,15 @@
+<div *ngIf="!overlay?.type?.legend?.categories">
+    <div class="legend-label">{{overlay.type?.legend?.label}}</div>
+    <div class="legend-container">
+        <div class="min-label">{{overlay.type?.legend?.min}}</div>
+        <div class="legend" [ngStyle]="{'background': 'linear-gradient(to right, ' + overlay.type?.legend?.palette?.join(',') + ')'}"></div>
+        <div class="max-label">{{overlay.type?.legend?.max}}</div>
+    </div>
+</div>
+<div class="categorical-legend" *ngIf="overlay?.type?.legend?.categories">
+    <div class="category" *ngFor="let category of overlay.type?.legend?.categories">
+        <div class="category-label">{{category.label}}</div>
+        <div class="category-color" [ngStyle]="{'background-color':category.color}"></div>
+    </div>
+</div>
+
