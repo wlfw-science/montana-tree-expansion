@@ -7,7 +7,7 @@ import { Overlay } from '../../services/overlays.service';
 import { HttpClient } from '@angular/common/http';
 
 
-import { AnalysisService } from '../../services/analysis.service';
+
 import { RoutingService } from '../../services/routing.service';
 
 
@@ -70,13 +70,10 @@ export class LandcoverControlComponent implements OnInit {
     private router: Router,
     public mapState: MapStateService,
     public http: HttpClient,
-
-
     private routing: RoutingService,
     public snackBar: MatSnackBar
   ) {
 
-    // initialize range of years supported
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
 
    }

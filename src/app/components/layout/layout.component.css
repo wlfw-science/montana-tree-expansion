@@ -3,75 +3,21 @@
   display: flex;
   flex: 1;
 }
-.background {
-    position: absolute;
-    left: 0; right: 0; top: 0; bottom: 0;
-    display: flex;
 
+.sidebar {
+  flex: 0.5;
+  display: block;
+  min-width: 400px;
+  max-width: 400px;
+  height: 100vh;
 }
 
-.panel {
-    z-index: 1000;
-    position: absolute;
-    margin:35px;
-    margin-top: 60px;
-    max-height: calc(100vh - 70px);
-    border-radius: 4pt;
-    border: 1pt solid gray;
-    background-color: white;
-    display: flex;
-    flex-flow: column;
-    max-width: calc(50vw - 70px);
-    min-height: 38px;
-    min-width: 38px;
-    overflow: hidden;
+.map-container {
+  width:100vw;
+  height: 100vh;
 }
 
-.panel-title {
-    margin:10px;
-    font-size: 18px;
-}
-
-.panelContent {
-    transition: max-height 0.5s ease;
-    text-align: left;
-    overflow: hidden;
-}
-
-.right {
-   right: 0;
-   top: 0;
-}
-
-.left {
-    left: 0;
-    top: 0;
-    min-width: 600px;
-}
-
-.tab-container {
-    width:500px;
-}
-
-app-short-link {
-    z-index: 1000;
-    position: fixed;
-    top: 5px;
-    right: 50px;
-}
 
 mat-tab-body {
     width: 400px;
 }
-
-app-map.mapRight {
-  position: absolute;
-  z-index: -1;
-  left:0;
-  pointer-events: all;
-}
-
-as-split-area.rightSplit {
-  /* pointer-events: none; */
-}
-

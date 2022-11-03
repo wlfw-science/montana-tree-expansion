@@ -50,7 +50,6 @@ import { FooterComponent } from './components/footer/footer.component';
 import { LandcoverControlComponent } from './components/landcover-control/landcover-control.component';
 
 import {GoogleMapsModule} from '@angular/google-maps'
-import { AnalysisService } from './services/analysis.service';
 import { RoutingService } from './services/routing.service';
 
 import { MapStateService } from './services/map-state.service';
@@ -128,7 +127,7 @@ export function googleApisLoaderFactory(
       deps: [GoogleMapsLoaderService],
       multi: true
     },
-    MapStateService,  AnalysisService,  RoutingService],
+    MapStateService,   RoutingService],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

@@ -198,9 +198,9 @@ export class MapComponent implements AfterViewInit, OnChanges {
   @Input() context: {center: google.maps.LatLng | undefined, zoom: number | undefined, source: string}
   @Output() contextChange = new EventEmitter< {center: google.maps.LatLng | undefined, zoom: number | undefined, source: string}>();
   @Input() mapId: string;
-
-
   @Input() basemap: google.maps.MapTypeId;
+  @Output() mapClick = new EventEmitter<any>();
+
 
   constructor(
     private mapState: MapStateService,
@@ -337,9 +337,6 @@ export class MapComponent implements AfterViewInit, OnChanges {
                 minZoom: overlay.minzoom,
                 maxZoom: overlay.maxnativezoom,
                 tileSize: 256,
-                onClick: (info, event) => {
-                  console.log(info, event)
-                },
                 renderSubLayers: (props) => {
 
                   const {
@@ -363,12 +360,15 @@ export class MapComponent implements AfterViewInit, OnChanges {
             maxZoom: 23,
             getLineColor: [250, 100, 100, 100],
             getFillColor: [140, 170, 180, 0],
-            getLineWidth: 3,
-            lineWidthMinPixels: 3,
+            getLineWidth: 0,
+            lineWidthMinPixels: 0,
             pickable: true,
-            onClick: (info, event) => console.log('Clicked:', info, event)
+            onClick: (info, event) => {
+              this.mapClick.emit(info.object.properties)
+            }
+            //onHover: (info, event) => console.log('Hovered:', info, event)
           })],
-          getTooltip: ({object}) => object && {
+          /*getTooltip: ({object}) => object && {
             html: prettyPrintJson.toHtml(
               object.properties,
               {lineNumbers: true}),
@@ -378,7 +378,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
                 'z-index': 10
 
               }
-          }
+          }*/
         });
 
       }
@@ -402,8 +402,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
       zoom = params.z,
       center = new google.maps.LatLng(lat, lng);
 
-    if(zoom) this.mapState.setZoom(zoom);
-    if(center) this.map.setCenter(center);
+
   }
   ngAfterViewInit() {
 
@@ -460,15 +459,8 @@ export class MapComponent implements AfterViewInit, OnChanges {
       overlays.forEach(o => this.setOverlay(o))
     });
 
-    this.mapState.drawingMode.subscribe(m => this.setDrawingMode(m));
-    this.mapState.draw.subscribe(h => this.onDrawHandler = h);
-    this.mapState.geojson.subscribe(g => {
-      if (this.activeInfoWindow) { this.activeInfoWindow.close() }
-      if (g) {
-        this.data.addGeoJson(g)
-      } else { this.clearGeojson() }
-    });
-    this.mapState.dataLayerStyles.subscribe(s => this.styleDataLayer(s));
+
+
     this.mapState.infoWindow.subscribe(w => {
       if (this.activeInfoWindow) { this.activeInfoWindow.close() }
       this.activeInfoWindow = w;

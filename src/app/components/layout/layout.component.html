@@ -1,31 +1,24 @@
+<div class="sidebar">
+  <app-landcover-control></app-landcover-control>
+  <div class="feature-data" [innerHTML]="featureData"></div>
+</div>
+<div class="map-container">
+<as-split  direction="horizontal">
 
-<!--<div  class="left panel">
-  <app-control-panel-toggle
-    [(value)]="leftToggle"
-    position="inner-top-right"
-    type="collapse-up"
-    ></app-control-panel-toggle>
-  <div class="panelContent"
-    [ngStyle]="{'max-height' : leftToggle ? 'calc(100vh - 70px)': '0px'}">
-
-
-
-  </div>
-</div>-->
-<app-landcover-control ></app-landcover-control>
-<as-split direction="horizontal">
-  <as-split-area [size]="50">
+  <as-split-area [size]="35">
     <app-map class = "mapLeft"
               mapId="left"
               [(context)]="context"
+              (mapClick)="handleClick($event)"
               [basemap]="leftBasemap"></app-map>
 
   </as-split-area>
-  <as-split-area class="rightSplit" [size]="50">
+  <as-split-area class="rightSplit" [size]="65">
     <app-map class = "mapRight"
-              [(context)]="context"
-              mapId="right"
-              [basemap]="rightBasemap"></app-map>
-
+    [(context)]="context"
+    (mapClick)="handleClick($event)"
+    mapId="right"
+    [basemap]="rightBasemap"></app-map>
   </as-split-area>
 </as-split>
+</div>
