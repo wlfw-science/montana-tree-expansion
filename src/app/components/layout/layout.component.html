@@ -3,7 +3,12 @@
   <div class="feature-data" [innerHTML]="featureData"></div>
 </div>
 <div class="map-container">
-<as-split  direction="horizontal">
+  <app-map class = "mapLeft"
+              mapId="right"
+              [(context)]="context"
+              (mapClick)="handleClick($event)"
+              [basemap]="rightBasemap"></app-map>
+<!--<as-split  direction="horizontal">
 
   <as-split-area [size]="35">
     <app-map class = "mapLeft"
@@ -20,5 +25,5 @@
     mapId="right"
     [basemap]="rightBasemap"></app-map>
   </as-split-area>
-</as-split>
+</as-split>-->
 </div>

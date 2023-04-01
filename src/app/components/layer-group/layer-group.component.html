@@ -1,6 +1,6 @@
 <table>
     <ng-container *ngFor='let overlay of overlays'>
-      <tr>
+      <tr *ngIf="overlay.showControl">
         <td class="control-cell"><app-popover *ngIf="overlay.help" class="help">
             {{overlay.help}}
             <a href="https://rangelands.app/products/">More information</a></app-popover></td>

@@ -51,6 +51,7 @@ export class LandcoverControlComponent implements OnInit {
       name: 'Montana Historical Imagery Outlines',
       opacity: 1.0,
       visible: true,
+      showControl: false,
       help: 'Historic imagery',
       mapIds: ['right', 'left'],
       type: {

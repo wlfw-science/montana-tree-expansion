@@ -21,7 +21,7 @@ export class OpacityControlComponent implements OnInit {
       const params: {[key:string]: string | number} = {};
       params[this.overlay.id + '_o'] = this.overlay.opacity;
       if (this.overlay.visible) {
-        this.mapState.removeOverlay(this.overlay)
+        this.mapState.removeOverlay(this.overlay);
         this.mapState.setOverlay(this.overlay)
       }
       this.routing.updateUrlParams(params);

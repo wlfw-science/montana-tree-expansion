@@ -1,7 +1,12 @@
+:host {
+  display: flex;
+  flex: 1;
+  position:relative;
+}
+
 .map {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  display:flex;
+  flex: 1;
 }
 
 .fade {
@@ -9,3 +14,20 @@
 }
 
 #map.pac-item {display: none}
+
+
+.gutter {
+  position: relative;
+  left: 50%;
+  height: 100%;
+  width: 5px;
+  z-index: 100;
+  background-color: #eee;
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+  cursor: col-resize;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==");
+}

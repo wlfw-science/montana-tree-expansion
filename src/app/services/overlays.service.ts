@@ -1,3 +1,4 @@
+import { GoogleMapsOverlay } from '@deck.gl/google-maps/typed';
 
 const default_opacity = 0.6;
 
@@ -32,6 +33,7 @@ export interface OverlayParameters {
     years?: number[];
     legend?: LegendOptions;
     name?: string;
+    showControl?: boolean;
     id: string;
     mask?: boolean;
     mapIds?: string[];
@@ -49,6 +51,7 @@ export class Overlay  {
   public year = 2020;
   public opacity: number;
   public params: any;
+  public showControl = true;
   public handlers: {click: Function, mousemove: Function};
   public bounds: google.maps.LatLngBounds;
   public visible: boolean;
@@ -58,6 +61,7 @@ export class Overlay  {
   public name: string;
   public mask: boolean;
   public mapIds: string[];
+  public GoogleMapsOverlay: GoogleMapsOverlay;
 
   constructor(params: OverlayParameters) {
     Object.assign(this, params);
