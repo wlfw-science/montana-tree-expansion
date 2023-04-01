@@ -1,29 +1,11 @@
-<div class="sidebar">
+<div [ngStyle]="{width: featureData ? '400px' : 0}">
   <app-landcover-control></app-landcover-control>
-  <div class="feature-data" [innerHTML]="featureData"></div>
+  <div class="feature-data" *ngIf="featureData" [innerHTML]="featureData"></div>
 </div>
 <div class="map-container">
   <app-map class = "mapLeft"
               mapId="right"
-              [(context)]="context"
               (mapClick)="handleClick($event)"
               [basemap]="rightBasemap"></app-map>
-<!--<as-split  direction="horizontal">
 
-  <as-split-area [size]="35">
-    <app-map class = "mapLeft"
-              mapId="left"
-              [(context)]="context"
-              (mapClick)="handleClick($event)"
-              [basemap]="leftBasemap"></app-map>
-
-  </as-split-area>
-  <as-split-area class="rightSplit" [size]="65">
-    <app-map class = "mapRight"
-    [(context)]="context"
-    (mapClick)="handleClick($event)"
-    mapId="right"
-    [basemap]="rightBasemap"></app-map>
-  </as-split-area>
-</as-split>-->
 </div>

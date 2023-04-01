@@ -70,6 +70,7 @@ import { OpacityControlComponent } from './components/opacity-control/opacity-co
 import { OverlayToggleControlComponent } from './components/overlay-toggle-control/overlay-toggle-control.component';
 import { OverlayLegendComponent } from './components/overlay-legend/overlay-legend.component';
 import { LayerGroupComponent } from './components/layer-group/layer-group.component';
+import { MapSplitterComponent } from './components/map-splitter/map-splitter.component';
 
 export function googleApisLoaderFactory(
   googleMapsApi: GoogleMapsLoaderService) {
@@ -99,7 +100,8 @@ export function googleApisLoaderFactory(
     OpacityControlComponent,
     OverlayToggleControlComponent,
     OverlayLegendComponent,
-    LayerGroupComponent
+    LayerGroupComponent,
+    MapSplitterComponent
   ],
   imports: [
     GoogleMapsModule,

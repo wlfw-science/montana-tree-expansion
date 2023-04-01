@@ -17,7 +17,7 @@ export class LayoutComponent  {
   public rightToggle = true;
   public leftBasemap = google.maps.MapTypeId.SATELLITE;
   public rightBasemap = google.maps.MapTypeId.SATELLITE;
-  public featureData = {};
+  public featureData: any;
   public tabIndex = 0;
   public context: {center:google.maps.LatLng | undefined, zoom: number | undefined, source: string} =
     {center: new google.maps.LatLng(47.8, -112.65), zoom:15, source: ''};

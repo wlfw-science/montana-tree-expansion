@@ -6,9 +6,10 @@ import { MapStateService } from '../../services/map-state.service';
 import { GoogleMapsOverlay } from '@deck.gl/google-maps/typed';
 import {MVTLayer} from '@deck.gl/geo-layers/typed';
 import {BitmapLayer} from '@deck.gl/layers/typed';
-import {TileLayer, TileLayerProps, _Tile2DHeader, GeoBoundingBox} from '@deck.gl/geo-layers/typed';
-import {MapView} from '@deck.gl/core/typed'
-
+import {TileLayer,  _Tile2DHeader} from '@deck.gl/geo-layers/typed';
+import GL from '@luma.gl/constants';
+import { RoutingService, Router } from '..';
+import { query } from '@angular/animations';
 
 
 @Component({
@@ -16,27 +17,27 @@ import {MapView} from '@deck.gl/core/typed'
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })
-export class MapComponent implements AfterViewInit, OnChanges {
+export class MapComponent implements AfterViewInit {
   @ViewChild('map') mapRef: ElementRef;
   private ready: boolean;
   private map: google.maps.Map;
   private deckgl: GoogleMapsOverlay;
   private layers: (TileLayer | MVTLayer)[] = [];
-
-  @Input() context: {center: google.maps.LatLng | undefined, zoom: number | undefined, source: string}
-  @Output() contextChange = new EventEmitter< {center: google.maps.LatLng | undefined, zoom: number | undefined, source: string}>();
+  public split: number = 50;
   @Input() mapId: string;
   @Input() basemap: google.maps.MapTypeId;
   @Output() mapClick = new EventEmitter<any>();
 
+  splitter = document.createElement('div');
+  splitterClicked = false;
+  splitterOffset: number;
 
   constructor(
     private mapState: MapStateService,
+    private routing: RoutingService,
+    private router: Router,
     private ref: ChangeDetectorRef) {
-      setInterval(() => {
-        this.ref.markForCheck();
-      }, 1000);
-    this.ready = false;
+      this.ready = false;
   }
 
 
@@ -45,6 +46,8 @@ export class MapComponent implements AfterViewInit, OnChanges {
     let layer;
 
     if (this.ready && overlay.mapIds.indexOf(this.mapId) >= 0 ) {
+      this.layers = this.layers.filter(l => l.id != overlay.id);
+
       if(overlay.type.format == 'XYZ') {
 
         layer =  new TileLayer({
@@ -64,7 +67,12 @@ export class MapComponent implements AfterViewInit, OnChanges {
                   return new BitmapLayer(props, {
                     data: null,
                     image: props.data,
-                    bounds: [west, south, east, north]
+                    bounds: [west, south, east, north],
+                    textureParameters: {
+                      [GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
+                      [GL.TEXTURE_MAG_FILTER]: GL.NEAREST
+                    }
+
                   });
               }
             });
@@ -87,15 +95,12 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
       }
       this.layers.push(layer);
-      let deckStyle = document.createElement('div').style;
-      //deckStyle.setProperty("--mask", "linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) 50%, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x");
-      //deckStyle.setProperty("-webkit-mask", "var(--mask)");
-      //deckStyle.setProperty("mask", "var(--mask)");
+
 
       this.deckgl.setProps({
-        layers: this.layers,
-        style: deckStyle
+        layers: this.layers
       });
+
 
     }
   }
@@ -104,19 +109,12 @@ export class MapComponent implements AfterViewInit, OnChanges {
     this.map.controls[position].push(control);
   }
 
-  applyParams(params: any) {
-    const lat = (params.ll || '').split(',')[0],
-      lng = (params.ll || '').split(',')[1],
-      zoom = params.z,
-      center = new google.maps.LatLng(lat, lng);
 
-
-  }
   ngAfterViewInit() {
 
     const self = this, mapProp = {
-      center: this.context.center,
-      zoom: this.context.zoom,
+      //center: this.c,
+      //zoom: this.mapState.zoom,
       streetViewControl: false,
       mapTypeId: this.basemap,
       styles: new SimpleBaseMap().style,
@@ -134,6 +132,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
     this.map = new google.maps.Map(this.mapRef.nativeElement, mapProp);
     this.deckgl = new GoogleMapsOverlay({});
     this.deckgl.setMap(this.map);
+
     this.ready = true;
 
     const input = document.createElement('input');
@@ -149,6 +148,58 @@ export class MapComponent implements AfterViewInit, OnChanges {
     });
 
 
+
+
+    this.splitter.style.position = 'relative';
+    this.splitter.style.height =  '100%';
+    this.splitter.style.width =  '12px';
+    this.splitter.style.left = '50%';
+    this.splitter.style.backgroundColor= '#eee';
+    this.splitter.style.backgroundRepeat= 'no-repeat';
+    this.splitter.style.backgroundPosition= '50%';
+    this.splitter.style.backgroundImage = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==")';
+    this.splitter.style.cursor= 'col-resize';
+
+    this.splitter.onmousedown = (e) => {
+      this.splitterClicked = true;
+      this.splitterOffset = this.splitter.offsetLeft - e.clientX;
+      let overlay = document.getElementById('deckgl-overlay');
+      if(overlay?.style) {
+        overlay.style.webkitMask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitter.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+        overlay.style.mask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitter.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+      }
+    }
+
+    this.splitter.onmouseup =  (e) => {
+      this.splitterClicked = false;
+  };
+
+  this.splitter.onmousemove = (e) => {
+      e.preventDefault();
+      if (this.splitterClicked) {
+
+          this.splitter.style.left = e.clientX + this.splitterOffset + 'px';
+          let overlay = document.getElementById('deckgl-overlay');
+      if(overlay?.style) {
+        overlay.style.webkitMask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitter.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+        overlay.style.mask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitter.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+      }
+
+      }
+  }
+  google.maps.event.addListener(this.map, 'mousemove', (e: any) => {
+    if(this.splitterClicked && this.splitter.onmousemove) {
+      this.splitter.style.left =e.pixel.x + 'px';
+
+    }
+  })
+
+  google.maps.event.addListener(this.map, 'mousup', (e: any) => {
+    this.splitterClicked = false;
+  })
+
+
+    this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.splitter);
     this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     autocomplete.addListener('place_changed', function () {
 
@@ -165,36 +216,37 @@ export class MapComponent implements AfterViewInit, OnChanges {
       overlays.forEach(o => this.setOverlay(o))
     });
 
+    this.mapState.bounds.subscribe(bounds => this.map.fitBounds(bounds));
+    this.loadUrlParams()
   }
 
   addListeners() {
     const self = this;
-    google.maps.event.addListener(this.map, 'bounds_changed', function() {
+    google.maps.event.addListener(this.map,
+                                  'bounds_changed', ()=>this.updateUrlParams());
 
-      self.contextChange.emit({zoom: self.map.getZoom(),
-                               center: self.map.getCenter(),
-                               source: self.mapId});
+  }
 
+  loadUrlParams() {
+    const queryParams = this.router.parseUrl(this.router.url).queryParams;
+    let lat = parseFloat(queryParams['ll'].split(',')[0]);
+    let lng = parseFloat(queryParams['ll'].split(',')[1]);
+    let z = parseInt(queryParams['z']);
+    let s = parseInt(queryParams['s']);
+    this.map.setCenter(new google.maps.LatLng(lat || 42, lng || -110));
+    this.map.setZoom(z || 10);
+    this.split = s;
+  }
 
-
-
-    });
-
+  updateUrlParams() {
+    const params: {[key:string]: string | number} = {};
+    params['ll'] = [this.map.getCenter()?.lat().toFixed(4), this.map.getCenter()?.lng().toFixed(4)].join(',');
+    params['z'] = this.map.getZoom()?.toString() || '7';
+    params['s'] = this.split;
+    this.routing.updateUrlParams(params);
   }
 
   clearListeners() {
     google.maps.event.clearListeners(this.map, 'bounds_changed');
-  }
-  ngOnChanges(changes: SimpleChanges): void {
-      if(this.map && this.ready && changes['context']
-                  && changes['context'].currentValue.source !== this.mapId ) {
-        this.ready=false;
-
-        this.map.setZoom(changes['context'].currentValue.zoom);
-        this.map.setCenter(changes['context'].currentValue.center);
-        setTimeout(() => {this.ready=true;this.addListeners();},1);
-
-
-      }
   }
 }

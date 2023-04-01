@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 
+const MAPS_KEY = 'AIzaSyAP3woooQpzzqKaLumyrht8toMVbX0GnbI';
 const googleMapsApiUrl =
-    'https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAP3woooQpzzqKaLumyrht8toMVbX0GnbI&libraries=places';
+    `https://maps.googleapis.com/maps/api/js?v=3&key=${MAPS_KEY}&libraries=autocomplete,places&callback=loadMap`;
 
 @Injectable()
 export class GoogleMapsLoaderService {
