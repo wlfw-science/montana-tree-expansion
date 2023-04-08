@@ -13,5 +13,16 @@
         transition: display 600ms ease-in-out;
 }
 
+.splitter {
+  position: absolute;
+  height: 100%;
+  width: 10px;
+  z-index: 100;
+  background-color: #eee;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==");
+  cursor: col-resize;
+}
 
 

@@ -19,16 +19,18 @@ import { query } from '@angular/animations';
 })
 export class MapComponent implements AfterViewInit {
   @ViewChild('map') mapRef: ElementRef;
+  @ViewChild('splitter') splitterRef: ElementRef;
   private ready: boolean;
   private map: google.maps.Map;
   private deckgl: GoogleMapsOverlay;
   private layers: (TileLayer | MVTLayer)[] = [];
   public split: number = 50;
+
   @Input() mapId: string;
   @Input() basemap: google.maps.MapTypeId;
   @Output() mapClick = new EventEmitter<any>();
 
-  splitter = document.createElement('div');
+
   splitterClicked = false;
   splitterOffset: number;
 
@@ -150,56 +152,40 @@ export class MapComponent implements AfterViewInit {
 
 
 
-    this.splitter.style.position = 'relative';
-    this.splitter.style.height =  '100%';
-    this.splitter.style.width =  '12px';
-    this.splitter.style.left = '50%';
-    this.splitter.style.backgroundColor= '#eee';
-    this.splitter.style.backgroundRepeat= 'no-repeat';
-    this.splitter.style.backgroundPosition= '50%';
-    this.splitter.style.backgroundImage = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==")';
-    this.splitter.style.cursor= 'col-resize';
 
-    this.splitter.onmousedown = (e) => {
+    this.splitterRef.nativeElement.onmousedown = (e: any) => {
       this.splitterClicked = true;
-      this.splitterOffset = this.splitter.offsetLeft - e.clientX;
-      let overlay = document.getElementById('deckgl-overlay');
-      if(overlay?.style) {
-        overlay.style.webkitMask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitter.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
-        overlay.style.mask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitter.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
-      }
+      this.splitterOffset = this.splitterRef.nativeElement.offsetLeft - e.clientX;
+
     }
 
-    this.splitter.onmouseup =  (e) => {
+    this.splitterRef.nativeElement.onmouseup =  (e:any) => {
       this.splitterClicked = false;
   };
 
-  this.splitter.onmousemove = (e) => {
+  this.splitterRef.nativeElement.onmousemove = (e:any) => {
       e.preventDefault();
       if (this.splitterClicked) {
-
-          this.splitter.style.left = e.clientX + this.splitterOffset + 'px';
-          let overlay = document.getElementById('deckgl-overlay');
-      if(overlay?.style) {
-        overlay.style.webkitMask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitter.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
-        overlay.style.mask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitter.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
-      }
-
+        this.updateOverlaysplit();
       }
   }
   google.maps.event.addListener(this.map, 'mousemove', (e: any) => {
-    if(this.splitterClicked && this.splitter.onmousemove) {
-      this.splitter.style.left =e.pixel.x + 'px';
-
+    if(this.splitterClicked && this.splitterRef.nativeElement.onmousemove) {
+      this.splitterRef.nativeElement.style.left = e.pixel.x + 'px';
+      this.updateOverlaysplit();
     }
   })
 
-  google.maps.event.addListener(this.map, 'mousup', (e: any) => {
+  google.maps.event.addListener(this.map, 'mouseup', (e: any) => {
     this.splitterClicked = false;
+    this.updateOverlaysplit();
   })
 
 
-    this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.splitter);
+
+
+
+
     this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     autocomplete.addListener('place_changed', function () {
 
@@ -227,6 +213,14 @@ export class MapComponent implements AfterViewInit {
 
   }
 
+  updateOverlaysplit() {
+    let overlay = document.getElementById('deckgl-overlay');
+      if(overlay?.style) {
+        overlay.style.webkitMask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitterRef.nativeElement.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+        overlay.style.mask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitterRef.nativeElement.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+      }
+  }
+
   loadUrlParams() {
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
     let lat = parseFloat(queryParams['ll'].split(',')[0]);
@@ -244,6 +238,7 @@ export class MapComponent implements AfterViewInit {
     params['z'] = this.map.getZoom()?.toString() || '7';
     params['s'] = this.split;
     this.routing.updateUrlParams(params);
+    window.parent.postMessage(JSON.stringify(this.router.parseUrl(this.router.url).queryParams), '*');
   }
 
   clearListeners() {
