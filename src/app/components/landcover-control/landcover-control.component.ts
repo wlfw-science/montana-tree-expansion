@@ -2,19 +2,11 @@ import { Component } from '@angular/core';
 import {
   rollUpDown, OnInit, MapStateService, Router
 } from '..';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import { Overlay } from '../../services/overlays.service';
-import { HttpClient } from '@angular/common/http';
-
-
-
+import { BehaviorSubject } from 'rxjs';
 import { RoutingService } from '../../services/routing.service';
-
-
-import { Helpers } from '../../classes/helpers';
-
 import { spinInOut } from '../../constants/animations';
-import { LegendOptions } from '../../services/overlays.service';
+
 
 
 
@@ -31,14 +23,14 @@ export class LandcoverControlComponent implements OnInit {
 
   featureLayers = {};
 
-    overlays = [new Overlay({
+  overlays = [new Overlay({
       id: 'montana-historical-imagery',
       name: 'Montana Historical Imagery',
       opacity: 1.0,
       visible: true,
       help: 'Historic imagery',
-      mapIds: ['right'],
-      type: {format: 'XYZ', name: '1950',
+      side: 'right',
+      type: {format: 'XYZ', name: 'Historical Imagery',
       id: 'mt-hist',
       tileurl: 'https://storage.googleapis.com/montana-historical-imagery/v1/{z}/{x}/{y}.png'} ,
       bounds: new google.maps.LatLngBounds(
@@ -46,6 +38,23 @@ export class LandcoverControlComponent implements OnInit {
           new google.maps.LatLng( 55.12908567856297 ,  -96.300538948688 )),
 
     }),
+    new Overlay({
+      id: 'montana-treecover-expansion',
+      name: 'Montana Treecover Expansion',
+      opacity: 1.0,
+      visible: true,
+      help: 'Treecover expansion',
+      mapIds: ['right'],
+      type: {format: 'XYZ', name: 'Treecover Expansion',
+      id: 'mt-tree',
+      tileurl: 'https://storage.googleapis.com/montana-treecover-expansion/v1/{z}/{x}/{y}.png'} ,
+      bounds: new google.maps.LatLngBounds(
+        new google.maps.LatLng( 41.005779201292384 ,  -120.60604051826046 ),
+          new google.maps.LatLng( 55.12908567856297 ,  -96.300538948688 )),
+
+    }),
+
+
     new Overlay({
       id: 'montana-historical-imagery-outlines',
       name: 'Montana Historical Imagery Outlines',
@@ -70,12 +79,10 @@ export class LandcoverControlComponent implements OnInit {
   constructor(
     private router: Router,
     public mapState: MapStateService,
-    public http: HttpClient,
-    private routing: RoutingService,
-    public snackBar: MatSnackBar
   ) {
 
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
+    //this.overlays =
 
    }
 
@@ -84,11 +91,8 @@ export class LandcoverControlComponent implements OnInit {
   updateOverlays() {
     this.overlays.forEach(o => {
       if (o instanceof Overlay) {
-        if (o.visible) {
-          this.mapState.removeOverlay(o);
-          this.mapState.setOverlay(o);
+          this.mapState.overlays.next(this.overlays.map((o) => new BehaviorSubject<Overlay>(o)));
         }
-      }
     })
 
   }

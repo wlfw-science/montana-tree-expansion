@@ -20,9 +20,9 @@ export class OverlayToggleControlComponent implements OnInit {
 
     this.overlay.visible = event && event.checked;
     if (this.overlay.visible) {
-        this.mapState.setOverlay(this.overlay);
+        //this.mapState.setOverlay(this.overlay);
       } else {
-        this.mapState.removeOverlay(this.overlay);
+        //this.mapState.removeOverlay(this.overlay);
     }
 
     const params : {

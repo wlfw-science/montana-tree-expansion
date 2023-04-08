@@ -31,6 +31,7 @@ export interface OverlayParameters {
     visible?: boolean;
     help?: string;
     years?: number[];
+    side?: 'left' | 'right';
     legend?: LegendOptions;
     name?: string;
     showControl?: boolean;
@@ -51,6 +52,7 @@ export class Overlay  {
   public year = 2020;
   public opacity: number;
   public params: any;
+  public side: 'right' | 'left';
   public showControl = true;
   public handlers: {click: Function, mousemove: Function};
   public bounds: google.maps.LatLngBounds;

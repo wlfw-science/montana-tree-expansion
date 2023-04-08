@@ -11,6 +11,41 @@ import GL from '@luma.gl/constants';
 import { RoutingService, Router } from '..';
 import { query } from '@angular/animations';
 
+class OverlayMapType implements google.maps.MapType {
+  tileSize: google.maps.Size;
+  alt: string|null = null;
+  maxZoom: number = 17;
+  minZoom: number = 0;
+  name: string|null = null;
+  projection: google.maps.Projection|null = null;
+  radius: number = 6378137;
+  overlay: Overlay;
+
+
+  constructor(overlay: Overlay) {
+    this.overlay = overlay;
+    this.name = overlay.name;
+  }
+
+  getTileUrl(a: google.maps.Point, z: number) {
+    return this.overlay.type.tileurl.replace('{x}', a.x.toString())
+  .replace('{y}', a.x.toString())
+  .replace('{z}', z.toString())
+  }
+
+  getTile(coord: google.maps.Point,
+    zoom: number,
+    ownerDocument: Document
+  ): HTMLElement {
+    const img = ownerDocument.createElement("img");
+    img.src = this.getTileUrl(coord, zoom)
+    img.style.opacity = this.overlay.opacity.toString();
+    return img;
+  }
+
+  releaseTile(tile: Element): void {}
+}
+
 
 @Component({
   selector: 'app-map',
@@ -22,7 +57,7 @@ export class MapComponent implements AfterViewInit {
   @ViewChild('splitter') splitterRef: ElementRef;
   private ready: boolean;
   private map: google.maps.Map;
-  private deckgl: GoogleMapsOverlay;
+  private decks: {[id: string]: GoogleMapsOverlay} = {};
   private layers: (TileLayer | MVTLayer)[] = [];
   public split: number = 50;
 
@@ -47,11 +82,11 @@ export class MapComponent implements AfterViewInit {
     const self = this;
     let layer;
 
-    if (this.ready && overlay.mapIds.indexOf(this.mapId) >= 0 ) {
-      this.layers = this.layers.filter(l => l.id != overlay.id);
+    if (this.ready) {
+
 
       if(overlay.type.format == 'XYZ') {
-
+        //let overlayMapType = new OverlayMapType(overlay);
         layer =  new TileLayer({
                 data: overlay.type.tileurl,
                 id: overlay.id,
@@ -94,16 +129,20 @@ export class MapComponent implements AfterViewInit {
             }
             //onHover: (info, event) => console.log('Hovered:', info, event)
           })
-
       }
-      this.layers.push(layer);
+      if(!this.decks[overlay.id]) {
 
-
-      this.deckgl.setProps({
-        layers: this.layers
-      });
-
-
+        this.decks[overlay.id] = new GoogleMapsOverlay({
+          layers: [layer],
+          id: overlay.id
+        });
+        this.decks[overlay.id].setMap(this.map);
+      } else {
+        this.decks[overlay.id].setProps({
+          layers: [layer],
+          id: overlay.id
+        });
+      }
     }
   }
 
@@ -132,8 +171,8 @@ export class MapComponent implements AfterViewInit {
     };
 
     this.map = new google.maps.Map(this.mapRef.nativeElement, mapProp);
-    this.deckgl = new GoogleMapsOverlay({});
-    this.deckgl.setMap(this.map);
+    //this.deckgl = new GoogleMapsOverlay({});
+    //this.deckgl.setMap(this.map);
 
     this.ready = true;
 
@@ -166,40 +205,36 @@ export class MapComponent implements AfterViewInit {
   this.splitterRef.nativeElement.onmousemove = (e:any) => {
       e.preventDefault();
       if (this.splitterClicked) {
-        this.updateOverlaysplit();
+        this.updateOverlaySplit();
       }
   }
   google.maps.event.addListener(this.map, 'mousemove', (e: any) => {
     if(this.splitterClicked && this.splitterRef.nativeElement.onmousemove) {
       this.splitterRef.nativeElement.style.left = e.pixel.x + 'px';
-      this.updateOverlaysplit();
+      this.updateOverlaySplit();
     }
   })
 
   google.maps.event.addListener(this.map, 'mouseup', (e: any) => {
     this.splitterClicked = false;
-    this.updateOverlaysplit();
+    this.updateOverlaySplit();
   })
-
-
-
-
 
 
     this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     autocomplete.addListener('place_changed', function () {
-
-        self.mapState.setBounds(autocomplete.getPlace().geometry?.viewport);
-
+      let bounds = autocomplete.getPlace().geometry?.viewport;
+      if(bounds) {
+        self.mapState.bounds.next(bounds);
+      }
     });
 
 
     this.addListeners();
 
-    // subscribe to mapstate changes
-    this.mapState.overlays.subscribe(overlays => {
-      this.deckgl.setProps({layers: []});
-      overlays.forEach(o => this.setOverlay(o))
+    // subscribe to overlay changes, TODO: make sensitive to individual overlay changes
+    this.mapState.overlays.subscribe((overlays) => {
+      overlays.forEach((o) => o.subscribe((overlay) => {this.setOverlay(overlay)}));
     });
 
     this.mapState.bounds.subscribe(bounds => this.map.fitBounds(bounds));
@@ -213,12 +248,16 @@ export class MapComponent implements AfterViewInit {
 
   }
 
-  updateOverlaysplit() {
-    let overlay = document.getElementById('deckgl-overlay');
-      if(overlay?.style) {
-        overlay.style.webkitMask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitterRef.nativeElement.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
-        overlay.style.mask = `linear-gradient(to right, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitterRef.nativeElement.style.left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+
+  updateOverlaySplit() {
+    this.mapState.overlays.getValue().forEach((overlaySubject) => {
+    let overlay = overlaySubject.getValue();
+    let canvas = document.getElementById(overlay.id);
+      if(canvas?.style && overlay.side) {
+        canvas.style.webkitMask = `linear-gradient(to ${overlay.side}, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitterRef.nativeElement.style[overlay.side === 'right' ? 'left' : 'right']}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+        canvas.style.mask = `linear-gradient(to  ${overlay.side}t, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitterRef.nativeElement.style[overlay.side === 'right' ? 'left' : 'right']}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
       }
+    });
   }
 
   loadUrlParams() {

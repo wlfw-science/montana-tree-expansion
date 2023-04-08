@@ -21,8 +21,8 @@ export class OpacityControlComponent implements OnInit {
       const params: {[key:string]: string | number} = {};
       params[this.overlay.id + '_o'] = this.overlay.opacity;
       if (this.overlay.visible) {
-        this.mapState.removeOverlay(this.overlay);
-        this.mapState.setOverlay(this.overlay)
+        let overlaySubject = this.mapState.overlays.getValue().find(o => o.getValue().id === this.overlay.id);
+        overlaySubject?.next(this.overlay);
       }
       this.routing.updateUrlParams(params);
     }
@@ -32,7 +32,7 @@ export class OpacityControlComponent implements OnInit {
     const params = this.router.parseUrl(this.router.url).queryParams
     this.overlay.opacity = parseFloat(params[this.overlay.id + '_o']) || this.overlay.opacity || 0.6;
     if (this.overlay.visible) {
-      this.mapState.setOverlay(this.overlay);
+      //this.mapState.setOverlay(this.overlay);
     }
   }
 
