@@ -44,7 +44,7 @@ export class LandcoverControlComponent implements OnInit {
       opacity: 1.0,
       visible: true,
       help: 'Treecover expansion',
-      mapIds: ['right'],
+      side: 'left',
       type: {format: 'XYZ', name: 'Treecover Expansion',
       id: 'mt-tree',
       tileurl: 'https://storage.googleapis.com/montana-treecover-expansion/v1/{z}/{x}/{y}.png'} ,

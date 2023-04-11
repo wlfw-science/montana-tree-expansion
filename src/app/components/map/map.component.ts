@@ -143,7 +143,9 @@ export class MapComponent implements AfterViewInit {
           id: overlay.id
         });
       }
+
     }
+
   }
 
   addControl(control: HTMLElement, position: google.maps.ControlPosition) {
@@ -188,10 +190,6 @@ export class MapComponent implements AfterViewInit {
       }
     });
 
-
-
-
-
     this.splitterRef.nativeElement.onmousedown = (e: any) => {
       this.splitterClicked = true;
       this.splitterOffset = this.splitterRef.nativeElement.offsetLeft - e.clientX;
@@ -208,18 +206,6 @@ export class MapComponent implements AfterViewInit {
         this.updateOverlaySplit();
       }
   }
-  google.maps.event.addListener(this.map, 'mousemove', (e: any) => {
-    if(this.splitterClicked && this.splitterRef.nativeElement.onmousemove) {
-      this.splitterRef.nativeElement.style.left = e.pixel.x + 'px';
-      this.updateOverlaySplit();
-    }
-  })
-
-  google.maps.event.addListener(this.map, 'mouseup', (e: any) => {
-    this.splitterClicked = false;
-    this.updateOverlaySplit();
-  })
-
 
     this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     autocomplete.addListener('place_changed', function () {
@@ -230,51 +216,80 @@ export class MapComponent implements AfterViewInit {
     });
 
 
-    this.addListeners();
 
     // subscribe to overlay changes, TODO: make sensitive to individual overlay changes
     this.mapState.overlays.subscribe((overlays) => {
-      overlays.forEach((o) => o.subscribe((overlay) => {this.setOverlay(overlay)}));
+      overlays.forEach((o) => o.subscribe((overlay) => {
+        this.setOverlay(overlay);
+        this.updateOverlaySplit();
+      }));
     });
 
-    this.mapState.bounds.subscribe(bounds => this.map.fitBounds(bounds));
-    this.loadUrlParams()
+    this.mapState.bounds.subscribe(bounds => {
+      this.map.fitBounds(bounds);
+      this.updateOverlaySplit();
+    });
+
+    this.addListeners();
+    this.loadUrlParams();
+    this.updateOverlaySplit();
+
   }
 
   addListeners() {
-    const self = this;
+
     google.maps.event.addListener(this.map,
                                   'bounds_changed', ()=>this.updateUrlParams());
+    google.maps.event.addListener(this.map, 'mousemove', (e: any) => {
+      if(this.splitterClicked && this.splitterRef.nativeElement.onmousemove) {
+        this.splitterRef.nativeElement.style.left = e.pixel.x + 'px';
+        this.updateOverlaySplit();
+      }
+    })
+
+    google.maps.event.addListener(this.map, 'mouseup', (e: any) => {
+      this.splitterClicked = false;
+      this.updateOverlaySplit();
+    })
+
 
   }
 
 
   updateOverlaySplit() {
     this.mapState.overlays.getValue().forEach((overlaySubject) => {
+
     let overlay = overlaySubject.getValue();
     let canvas = document.getElementById(overlay.id);
       if(canvas?.style && overlay.side) {
-        canvas.style.webkitMask = `linear-gradient(to ${overlay.side}, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitterRef.nativeElement.style[overlay.side === 'right' ? 'left' : 'right']}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
-        canvas.style.mask = `linear-gradient(to  ${overlay.side}t, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${this.splitterRef.nativeElement.style[overlay.side === 'right' ? 'left' : 'right']}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+        let offset: string = overlay.side === 'right' ?
+          (this.splitterRef.nativeElement.offsetLeft + this.splitterRef.nativeElement.offsetWidth/2) + 'px'  :
+          (this.mapRef.nativeElement.offsetWidth - (this.splitterRef.nativeElement.offsetLeft + this.splitterRef.nativeElement.offsetWidth/2)) + 'px';
+        let mask = `linear-gradient(to ${overlay.side}, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${offset}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+        canvas.style.webkitMask = canvas.style.mask = mask;
       }
     });
   }
 
   loadUrlParams() {
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
-    let lat = parseFloat(queryParams['ll'].split(',')[0]);
-    let lng = parseFloat(queryParams['ll'].split(',')[1]);
-    let z = parseInt(queryParams['z']);
-    let s = parseInt(queryParams['s']);
-    this.map.setCenter(new google.maps.LatLng(lat || 42, lng || -110));
-    this.map.setZoom(z || 10);
-    this.split = s;
+    let ll = queryParams['ll'];
+    let lat = ll ? ll.split(',')[0]: 46.4;
+    let lng = ll ? ll.split(',')[1]: -110;
+    let z = parseInt(queryParams['z'] || '7');
+    let s = parseInt(queryParams['s'] || '50');
+    this.map.setCenter(new google.maps.LatLng(lat, lng));
+    this.map.setZoom(z);
+    this.splitterRef.nativeElement.style.left = this.mapRef.nativeElement.offsetWidth*s/100 -
+                                                this.splitterRef.nativeElement.offsetWidth + 'px';
+
+    this.updateOverlaySplit();
   }
 
   updateUrlParams() {
     const params: {[key:string]: string | number} = {};
-    params['ll'] = [this.map.getCenter()?.lat().toFixed(4), this.map.getCenter()?.lng().toFixed(4)].join(',');
-    params['z'] = this.map.getZoom()?.toString() || '7';
+    params['ll'] = [this.map.getCenter()?.lat().toFixed(4) || 46.4, this.map.getCenter()?.lng().toFixed(4)|| -111.4].join(',');
+    params['z'] = this.map.getZoom()?.toString() || '9';
     params['s'] = this.split;
     this.routing.updateUrlParams(params);
     window.parent.postMessage(JSON.stringify(this.router.parseUrl(this.router.url).queryParams), '*');
