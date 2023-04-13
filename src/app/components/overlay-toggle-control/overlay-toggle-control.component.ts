@@ -19,11 +19,11 @@ export class OverlayToggleControlComponent implements OnInit {
   public toggleOverlay(event: any) {
 
     this.overlay.visible = event && event.checked;
-    if (this.overlay.visible) {
-        //this.mapState.setOverlay(this.overlay);
-      } else {
-        //this.mapState.removeOverlay(this.overlay);
-    }
+
+
+    let overlaySubject = this.mapState.overlays.getValue().find(o => o.getValue().id === this.overlay.id);
+    overlaySubject?.next(this.overlay);
+
 
     const params : {
       [key: string]: number | string,

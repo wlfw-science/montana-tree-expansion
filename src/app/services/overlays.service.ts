@@ -1,4 +1,5 @@
 import { GoogleMapsOverlay } from '@deck.gl/google-maps/typed';
+import { BehaviorSubject } from 'rxjs';
 
 const default_opacity = 0.6;
 
@@ -23,7 +24,7 @@ export interface OverlayType {
 }
 
 export interface OverlayParameters {
-    opacity?: number;
+    opacity: number;
     params?: any;
     handlers?: {click: Function, mousemove: Function};
     type: OverlayType;
@@ -50,7 +51,7 @@ export class Overlay  {
   public data: google.maps.Data;
   public tile_params = [];
   public year = 2020;
-  public opacity: number;
+  public opacity = default_opacity;
   public params: any;
   public side: 'right' | 'left';
   public showControl = true;
@@ -71,11 +72,10 @@ export class Overlay  {
       click: (params.handlers || {click: () => {}}).click,
       mousemove: (params.handlers || {mousemove: () => {}}).mousemove
     };
-    this.opacity = (params.opacity || params.opacity === 0) ? params.opacity : default_opacity
-    this.config()
+    this.config(params)
  }
 
- config() {
+ config(params:any) {
 
       if(!this.bounds) {
         this.bounds =  new google.maps.LatLngBounds(

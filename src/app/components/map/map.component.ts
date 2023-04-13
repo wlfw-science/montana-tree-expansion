@@ -1,5 +1,6 @@
 
-import { Component, Input, OnChanges,  ChangeDetectorRef, AfterViewInit, ViewChild, EventEmitter, ElementRef, Output, SimpleChanges } from '@angular/core';
+import { Component, Input,  AfterViewInit, ViewChild,  ViewContainerRef,
+  EventEmitter, ElementRef, Output } from '@angular/core';
 import { SimpleBaseMap } from './basemaps.service';
 import { Overlay} from '../../services/overlays.service';
 import { MapStateService } from '../../services/map-state.service';
@@ -9,10 +10,13 @@ import {BitmapLayer} from '@deck.gl/layers/typed';
 import {TileLayer,  _Tile2DHeader} from '@deck.gl/geo-layers/typed';
 import GL from '@luma.gl/constants';
 import { RoutingService, Router } from '..';
+import { TreecoverExpansionControlComponent } from '../treecover-expansion-control/treecover-expansion-control.component';
 import { query } from '@angular/animations';
+import { EventListenerFocusTrapInertStrategy } from '@angular/cdk/a11y';
+
 
 class OverlayMapType implements google.maps.MapType {
-  tileSize: google.maps.Size;
+  tileSize: google.maps.Size = new google.maps.Size(256, 256);
   alt: string|null = null;
   maxZoom: number = 17;
   minZoom: number = 0;
@@ -22,6 +26,8 @@ class OverlayMapType implements google.maps.MapType {
   overlay: Overlay;
 
 
+
+
   constructor(overlay: Overlay) {
     this.overlay = overlay;
     this.name = overlay.name;
@@ -29,17 +35,20 @@ class OverlayMapType implements google.maps.MapType {
 
   getTileUrl(a: google.maps.Point, z: number) {
     return this.overlay.type.tileurl.replace('{x}', a.x.toString())
-  .replace('{y}', a.x.toString())
-  .replace('{z}', z.toString())
+                                    .replace('{y}', a.y.toString())
+                                    .replace('{z}', z.toString());
   }
+
 
   getTile(coord: google.maps.Point,
     zoom: number,
     ownerDocument: Document
   ): HTMLElement {
     const img = ownerDocument.createElement("img");
-    img.src = this.getTileUrl(coord, zoom)
+    img.src = this.getTileUrl(coord, zoom);
+    img.className = this.overlay.id;
     img.style.opacity = this.overlay.opacity.toString();
+
     return img;
   }
 
@@ -55,10 +64,10 @@ class OverlayMapType implements google.maps.MapType {
 export class MapComponent implements AfterViewInit {
   @ViewChild('map') mapRef: ElementRef;
   @ViewChild('splitter') splitterRef: ElementRef;
+
   private ready: boolean;
   private map: google.maps.Map;
-  private decks: {[id: string]: GoogleMapsOverlay} = {};
-  private layers: (TileLayer | MVTLayer)[] = [];
+  private overlays: {[id: string]: GoogleMapsOverlay} = {};
   public split: number = 50;
 
   @Input() mapId: string;
@@ -66,27 +75,44 @@ export class MapComponent implements AfterViewInit {
   @Output() mapClick = new EventEmitter<any>();
 
 
+
+
   splitterClicked = false;
   splitterOffset: number;
+  featureData: {[id: string]: {}} = {}
+  marker: google.maps.Marker = new google.maps.Marker();
 
   constructor(
     private mapState: MapStateService,
     private routing: RoutingService,
     private router: Router,
-    private ref: ChangeDetectorRef) {
+    private hostRef: ElementRef,
+    public viewContainerRef: ViewContainerRef) {
       this.ready = false;
   }
 
 
   setOverlay(overlay: Overlay) {
-    const self = this;
-    let layer;
+
+    let layer: any;
 
     if (this.ready) {
-
-
       if(overlay.type.format == 'XYZ') {
-        //let overlayMapType = new OverlayMapType(overlay);
+        /*
+        let overlayMapType = new OverlayMapType(overlay);
+        let selectedIndex: number | null = null;
+        this.map.overlayMapTypes.forEach((mt, i) => {
+          if(mt?.name === overlay.name) {
+            selectedIndex = i;
+          }
+        });
+        if(selectedIndex !== null) {
+          this.map.overlayMapTypes.setAt( selectedIndex, overlayMapType);
+        } else {
+          this.map.overlayMapTypes.push(overlayMapType);
+        }
+        console.log(this.map.overlayMapTypes.getAt(0))
+        */
         layer =  new TileLayer({
                 data: overlay.type.tileurl,
                 id: overlay.id,
@@ -113,10 +139,12 @@ export class MapComponent implements AfterViewInit {
                   });
               }
             });
+
       } else  {
         layer = new MVTLayer({
             data: overlay.type.tileurl,
             id: overlay.id,
+            opacity: (overlay.opacity >= 0) ? overlay.opacity: 0.8,
             minZoom: 0,
             maxZoom: 23,
             getLineColor: [250, 100, 100, 100],
@@ -125,39 +153,61 @@ export class MapComponent implements AfterViewInit {
             lineWidthMinPixels: 0,
             pickable: true,
             onClick: (info, event) => {
-              this.mapClick.emit(info.object.properties)
+              this.featureData[overlay.id] = info.object.properties
+              if(info.coordinate) {
+                this.marker.setPosition(new google.maps.LatLng(info.coordinate[1],
+                                                               info.coordinate[0]));
+                this.marker.setMap(this.map);
+              }  else {
+                this.marker.setMap(null);
+              }
+
+              this.mapClick.emit(this.featureData);
             }
             //onHover: (info, event) => console.log('Hovered:', info, event)
-          })
-      }
-      if(!this.decks[overlay.id]) {
+          });
 
-        this.decks[overlay.id] = new GoogleMapsOverlay({
-          layers: [layer],
-          id: overlay.id
-        });
-        this.decks[overlay.id].setMap(this.map);
-      } else {
-        this.decks[overlay.id].setProps({
-          layers: [layer],
-          id: overlay.id
-        });
+
       }
+
+
+
+      if(!this.overlays[overlay.id]) {
+
+        this.overlays[overlay.id] = new GoogleMapsOverlay({
+          layers: [layer],
+          id: overlay.id,
+        });
+        this.overlays[overlay.id].setMap(this.map);
+      } else {
+        if(overlay.visible) {
+          this.overlays[overlay.id].setProps({
+            layers: [layer],
+            id: overlay.id
+          });
+        } else {
+          this.overlays[overlay.id].finalize();
+          delete(this.overlays[overlay.id]);
+        }
+      }
+
+      setTimeout(() => this.updateOverlaySplit(), 50);
+      setTimeout(() => this.updateOverlaySplit(), 100);
+
+      setTimeout(() => this.updateOverlaySplit(), 500);
+      setTimeout(() => this.updateOverlaySplit(), 1000);
+
+
 
     }
 
   }
 
-  addControl(control: HTMLElement, position: google.maps.ControlPosition) {
-    this.map.controls[position].push(control);
-  }
-
-
   ngAfterViewInit() {
 
     const self = this, mapProp = {
-      //center: this.c,
-      //zoom: this.mapState.zoom,
+
+      fullscreenControl: false,
       streetViewControl: false,
       mapTypeId: this.basemap,
       styles: new SimpleBaseMap().style,
@@ -173,8 +223,7 @@ export class MapComponent implements AfterViewInit {
     };
 
     this.map = new google.maps.Map(this.mapRef.nativeElement, mapProp);
-    //this.deckgl = new GoogleMapsOverlay({});
-    //this.deckgl.setMap(this.map);
+
 
     this.ready = true;
 
@@ -190,10 +239,39 @@ export class MapComponent implements AfterViewInit {
       }
     });
 
-    this.splitterRef.nativeElement.onmousedown = (e: any) => {
+    let treecoverExpansionControlElementRef = this.viewContainerRef.createComponent(TreecoverExpansionControlComponent).instance.element.nativeElement;
+
+
+    let template = document.createElement('template');
+    let fullscreenHtml = `<button draggable="false" aria-label="Toggle fullscreen view" title="Toggle fullscreen view" type="button" aria-pressed="false" class="gm-control-active gm-fullscreen-control" style="background: none rgb(255, 255, 255); border: 0px; margin: 6px; padding: 0px; text-transform: none; appearance: none; position: absolute; cursor: pointer; user-select: none; border-radius: 2px; height: 24px; width: 24px; box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px; overflow: hidden; top: 0px; right: 0px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"></button>`
+    fullscreenHtml = fullscreenHtml.trim();
+    template.innerHTML = fullscreenHtml;
+    if(template.content.firstChild) {
+      const fullscreenControl: HTMLButtonElement = template.content.firstChild as HTMLButtonElement;
+      fullscreenControl.onclick = (e) => {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+          fullscreenControl.innerHTML = `<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;">`;
+        } else {
+         document.getElementsByTagName('app-layout')[0].requestFullscreen();
+         fullscreenControl.innerHTML = `<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M4%204H0v2h6V0H4v4zm10%200V0h-2v6h6V4h-4zm-2%2014h2v-4h4v-2h-6v6zM0%2014h4v4h2v-6H0v2z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M4%204H0v2h6V0H4v4zm10%200V0h-2v6h6V4h-4zm-2%2014h2v-4h4v-2h-6v6zM0%2014h4v4h2v-6H0v2z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M4%204H0v2h6V0H4v4zm10%200V0h-2v6h6V4h-4zm-2%2014h2v-4h4v-2h-6v6zM0%2014h4v4h2v-6H0v2z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;">`
+
+        }
+        setTimeout(()=>this.updateOverlaySplit(), 1000);
+
+      }
+
+
+      this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(fullscreenControl);
+      this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(treecoverExpansionControlElementRef);
+
+    }
+
+
+   this.splitterRef.nativeElement.onmousedown = (e: any) => {
+      e.preventDefault();
       this.splitterClicked = true;
       this.splitterOffset = this.splitterRef.nativeElement.offsetLeft - e.clientX;
-
     }
 
     this.splitterRef.nativeElement.onmouseup =  (e:any) => {
@@ -208,6 +286,8 @@ export class MapComponent implements AfterViewInit {
   }
 
     this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+
     autocomplete.addListener('place_changed', function () {
       let bounds = autocomplete.getPlace().geometry?.viewport;
       if(bounds) {
@@ -239,7 +319,9 @@ export class MapComponent implements AfterViewInit {
   addListeners() {
 
     google.maps.event.addListener(this.map,
-                                  'bounds_changed', ()=>this.updateUrlParams());
+                                  'bounds_changed', ()=> {
+                                    setTimeout(()=>this.updateUrlParams(), 1000)}
+                                    );
     google.maps.event.addListener(this.map, 'mousemove', (e: any) => {
       if(this.splitterClicked && this.splitterRef.nativeElement.onmousemove) {
         this.splitterRef.nativeElement.style.left = e.pixel.x + 'px';
@@ -262,10 +344,20 @@ export class MapComponent implements AfterViewInit {
     let overlay = overlaySubject.getValue();
     let canvas = document.getElementById(overlay.id);
       if(canvas?.style && overlay.side) {
-        let offset: string = overlay.side === 'right' ?
-          (this.splitterRef.nativeElement.offsetLeft + this.splitterRef.nativeElement.offsetWidth/2) + 'px'  :
-          (this.mapRef.nativeElement.offsetWidth - (this.splitterRef.nativeElement.offsetLeft + this.splitterRef.nativeElement.offsetWidth/2)) + 'px';
-        let mask = `linear-gradient(to ${overlay.side}, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${offset}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
+        let left: string, offset: number = overlay.side === 'right' ?
+          (this.splitterRef.nativeElement.offsetLeft + this.splitterRef.nativeElement.offsetWidth/2)  :
+          (this.mapRef.nativeElement.offsetWidth - (this.splitterRef.nativeElement.offsetLeft + this.splitterRef.nativeElement.offsetWidth/2));
+
+        if(offset < 0) {
+          this.splitterRef.nativeElement.style.left = '0px';
+          offset  = 0;
+          this.splitterRef.nativeElement.style.left = '0px';
+        } else if (offset > this.mapRef.nativeElement.offsetWidth) {
+          offset = this.mapRef.nativeElement.offsetWidth;
+          this.splitterRef.nativeElement.style.left = (this.mapRef.nativeElement.offsetWidth - this.splitterRef.nativeElement.offsetWidth) + 'px'
+        }
+        left = offset + 'px'
+        let mask = `linear-gradient(to ${overlay.side}, rgba(0,0,0, 1) 0, rgba(0,0,0, 1) ${left}, rgba(0,0,0, 0) 0 ) 100% 50% / 100% 100% repeat-x`;
         canvas.style.webkitMask = canvas.style.mask = mask;
       }
     });

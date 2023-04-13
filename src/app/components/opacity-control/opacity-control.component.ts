@@ -31,9 +31,7 @@ export class OpacityControlComponent implements OnInit {
   ngOnInit() {
     const params = this.router.parseUrl(this.router.url).queryParams
     this.overlay.opacity = parseFloat(params[this.overlay.id + '_o']) || this.overlay.opacity || 0.6;
-    if (this.overlay.visible) {
-      //this.mapState.setOverlay(this.overlay);
-    }
+
   }
 
 }

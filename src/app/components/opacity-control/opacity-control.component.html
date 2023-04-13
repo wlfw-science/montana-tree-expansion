@@ -1,5 +1,7 @@
-<mat-slider 
-    name="opacity" thumbLabel (change)="setOpacity($event)" 
-        [value]="overlay && overlay.opacity*100" 
+<mat-slider
+    name="opacity" (change)="setOpacity($event)"
+        [value]="overlay && overlay.opacity*100"
         tickInterval="1" min="0" max="100" step="1"
-        [disabled]="!overlay.visible"></mat-slider>
+        [disabled]="!overlay.visible">
+        <input matSliderThumb>
+      </mat-slider>

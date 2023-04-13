@@ -13,31 +13,18 @@ export class LayoutComponent  {
   /*
    * The main routed component
    */
-  public leftToggle = true;
-  public rightToggle = true;
-  public leftBasemap = google.maps.MapTypeId.SATELLITE;
-  public rightBasemap = google.maps.MapTypeId.SATELLITE;
-  public featureData: any;
-  public tabIndex = 0;
+
+
+  public basemap = google.maps.MapTypeId.HYBRID;
+  public featureData: {[key: string]: {[key:string]: number | string}};
   public context: {center:google.maps.LatLng | undefined, zoom: number | undefined, source: string} =
     {center: new google.maps.LatLng(47.8, -112.65), zoom:15, source: ''};
 
-  constructor(
-    private router: Router,
-    private routing: RoutingService,
-  ) {
-    this.routing.url.subscribe(u => u ||
-      this.router.navigateByUrl('') )
-    const params = this.routing.getParams();
-    if (params['tab']) {
-      this.tabIndex = params['tab'];
-    }
+  constructor() {
 
   }
-  public handleClick(event: any) {
-    console.log(event)
-    this.featureData = prettyPrintJson.toHtml(
-      event,
-      {lineNumbers: true});
-    }
+  public handleClick(event: {[key: string]: {[key:string]: number | string}}) {
+
+    this.featureData = event;
+  }
 }
