@@ -10,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 export class AppComponent {
   featureLayers = {};
   overlays = [new Overlay({
-                id: 'montana-historical-imagery',
+                id: 'imagery',
                 name: 'Montana Historical Imagery',
                 opacity: 1.0,
                 visible: true,
@@ -29,7 +29,7 @@ export class AppComponent {
 
               }),
               new Overlay({
-                id: 'montana-treecover-expansion',
+                id: 'treecover',
                 name: 'Montana Treecover Expansion',
                 opacity: 1.0,
                 visible: true,
@@ -45,45 +45,7 @@ export class AppComponent {
                   new google.maps.LatLng( 41.005779201292384 ,  -120.60604051826046 ),
                     new google.maps.LatLng( 55.12908567856297 ,  -96.300538948688 )),
 
-              }),
-              /* new Overlay({
-                id: 'montana-historical-imagery-seamlines',
-                name: 'Montana Historical Imagery Seamlines',
-                opacity: 1.0,
-                visible: true,
-                showControl: false,
-                help: 'Historic imagery',
-                type: {
-                    name: '1950',
-                    id: 'mt-hist-seam',
-                    format: 'MVT',
-                    tileurl: 'https://storage.googleapis.com/montana-historical-imagery/seamlines/{z}/{x}/{y}.pbf',
-
-                  },
-                bounds: new google.maps.LatLngBounds(
-                  new google.maps.LatLng( 41.005779201292384 ,  -120.60604051826046 ),
-                  new google.maps.LatLng( 55.12908567856297 ,  -96.300538948688 )),
-
-              }),
-              new Overlay({
-                id: 'montana-historical-imagery-cog-footprint',
-                name: 'Montana Historical Imagery Outlines',
-                opacity: 1.0,
-                visible: true,
-                showControl: false,
-                help: 'Historic imagery',
-                type: {
-                    name: '1950',
-                    id: 'mt-hist-cog',
-                    format: 'MVT',
-                    tileurl: 'https://storage.googleapis.com/montana-historical-imagery/cogDownload/{z}/{x}/{y}.pbf',
-
-                  },
-                bounds: new google.maps.LatLngBounds(
-                  new google.maps.LatLng( 41.005779201292384 ,  -120.60604051826046 ),
-                  new google.maps.LatLng( 55.12908567856297 ,  -96.300538948688 )),
-
-              })*/
+              })
   ];
 
 

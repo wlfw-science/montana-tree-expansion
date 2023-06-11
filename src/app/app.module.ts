@@ -1,12 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, APP_INITIALIZER } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RoutingModule } from './routing/routing.module';
 
 // Material Form Controls
 
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+
 // Material Buttons & Indicators
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -38,12 +38,12 @@ export function googleApisLoaderFactory(
   ],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
     RoutingModule,
     MatSlideToggleModule,
     MatTooltipModule,
-    MatSliderModule,  MatIconModule,
-  ],
+    MatSliderModule,
+    MatIconModule,
+    ],
   entryComponents: [AppComponent],
   providers: [
     GoogleMapsLoaderService,

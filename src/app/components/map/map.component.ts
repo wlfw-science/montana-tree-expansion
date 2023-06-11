@@ -5,11 +5,9 @@ import { Component, Input,  AfterViewInit, ViewChild,  ViewContainerRef,
 import { Overlay} from '../../services/overlays.service';
 import { MapStateService } from '../../services/map-state.service';
 import { GoogleMapsOverlay } from '@deck.gl/google-maps/typed';
-import {MVTLayer} from '@deck.gl/geo-layers/typed';
-import {BitmapLayer, GeoJsonLayer} from '@deck.gl/layers/typed';
+import {BitmapLayer,GeoJsonLayer} from '@deck.gl/layers/typed';
 import {TileLayer, _Tile2DHeader} from '@deck.gl/geo-layers/typed';
 import {MaskExtension} from '@deck.gl/extensions/typed';
-import {geojsonToBinary} from '@loaders.gl/gis';
 
 import GL from '@luma.gl/constants';
 import { RoutingService, Router } from '..';
@@ -49,8 +47,8 @@ export class MapComponent implements AfterViewInit {
   private ready: boolean;
   private map: google.maps.Map;
   private deck: GoogleMapsOverlay;
-  private layers: {[id: string]: TileLayer | MVTLayer | GeoJsonLayer} = {};
-  private masks: {[id: string]: TileLayer | MVTLayer | GeoJsonLayer} = {};
+  private layers: {[id: string]: TileLayer } = {};
+  private masks: {[id: string]: TileLayer | GeoJsonLayer} = {};
   public splitLng: number | null | undefined;
 
   @Input() mapId: string;
@@ -120,13 +118,12 @@ clickDeck(info:any, event:any) {
                 extensions: [new MaskExtension()],
 
                 renderSubLayers: (props) => {
-
                   const {
-                    bbox: {west, south, east, north}
+                    boundingBox: [[west, south], [east, north]]
                   } = props.tile;
 
                   return new BitmapLayer(props, {
-                    data: null,
+                    data: undefined,
                     image: props.data,
                     bounds: [west, south, east, north],
                     textureParameters: {
@@ -434,17 +431,19 @@ clickDeck(info:any, event:any) {
       google.maps.event.trigger(this.map, 'click', {latLng: new google.maps.LatLng(mlat,mlng)});
     }
     let z = parseInt(queryParams['z'] || '7');
-    this.splitLng = parseFloat(queryParams['s'] || lng);
-    this.map.setCenter(new google.maps.LatLng(lat, lng));
-    this.map.setZoom(z);
+    let split = parseFloat(queryParams['s'] || lng);
+
 
     setTimeout(() => {
         try {
+          this.map.setCenter(new google.maps.LatLng(lat, lng));
+          this.map.setZoom(z);
+          this.splitLng = split;
           let sPix = this.latLngToPixels(new google.maps.LatLng(lat, this.splitLng)) || [this.mapRef.nativeElement.offsetWidth / 2 - this.splitterRef.nativeElement.offsetWidth/2];
           let x = sPix[0];
           if(x && (x > 0 && x < this.mapRef.nativeElement.offsetWidth)) {
             this.splitterRef.nativeElement.style.left = x + 'px';
-            console.log(`set split to ${x}`);
+
           } else {
             this.splitterRef.nativeElement.style.left = this.mapRef.nativeElement.offsetWidth/2-this.splitterRef.nativeElement.offsetWidth/2 + 'px';
           }
