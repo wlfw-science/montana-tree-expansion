@@ -32,12 +32,15 @@ export interface OverlayParameters {
     visible?: boolean;
     help?: string;
     years?: number[];
-    side?: 'left' | 'right';
+    minZoom?: number;
+    maxZoom?: number;
+    minNativeZoom?: number;
+    maxNativeZoom?: number;
+    mask?: 'left' | 'right';
     legend?: LegendOptions;
     name?: string;
     showControl?: boolean;
     id: string;
-    mask?: boolean;
     mapIds?: string[];
 }
 
@@ -45,15 +48,16 @@ export class Overlay  {
 
   public id: string;
   public type: OverlayType = {id: 'none', tileurl: '', format: 'XYZ'};
-  public minzoom = 4;
-  public maxzoom = 20;
-  public maxnativezoom = 16;
+  public minZoom:number;
+  public maxZoom = 20;
+  public minNativeZoom:number;
+  public maxNativeZoom = 16;
   public data: google.maps.Data;
   public tile_params = [];
   public year = 2020;
   public opacity = default_opacity;
   public params: any;
-  public side: 'right' | 'left';
+  public mask: 'right' | 'left';
   public showControl = true;
   public handlers: {click: Function, mousemove: Function};
   public bounds: google.maps.LatLngBounds;
@@ -62,7 +66,6 @@ export class Overlay  {
   public years: number[];
   public legend: LegendOptions;
   public name: string;
-  public mask: boolean;
   public mapIds: string[];
   public GoogleMapsOverlay: GoogleMapsOverlay;
 

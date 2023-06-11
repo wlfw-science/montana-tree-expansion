@@ -1,20 +1,4 @@
-<div class="sidebar" *ngIf="featureData && featureData['montana-historical-imagery-seamlines']">
-  <div class="feature-data">
-    <p>
-      Acquisition date: <span [innerHTML]="featureData['montana-historical-imagery-seamlines']['AcqstnD']"></span>
-    </p>
-    <p>
-      Source image: <span [innerHTML]="featureData['montana-historical-imagery-seamlines']['usgs_url'] | linkify"></span>
-    </p>
-    <p>
-      Download GIS data: <span [innerHTML]="featureData['montana-historical-imagery-cog-footprint']['tile_url'] | linkify"></span>
-    </p>
-  </div>
-</div>
 <div class="map-container">
-  <app-map class = "mapLeft"
-              mapId="right"
-              (mapClick)="handleClick($event)"
-              [basemap]="basemap"></app-map>
-
+  <app-map (mapClick)="handleClick($event)"
+          [basemap]="basemap"></app-map>
 </div>
