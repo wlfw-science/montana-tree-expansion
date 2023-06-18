@@ -9,11 +9,8 @@
   flex: 1;
 }
 
-.fade {
-        transition: display 600ms ease-in-out;
-}
 
-.splitter {
+/*.splitter {
   position: absolute;
   height: 100%;
   width: 12px;
@@ -36,4 +33,8 @@ app-landcover-control {
   padding: -10px;
 }
 
+app-autocomplete-control {
+  margin: 5px;
+}
+*/
 

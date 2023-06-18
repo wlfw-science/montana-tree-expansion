@@ -1,5 +1,5 @@
 
-import { Component, Input,  AfterViewInit, ViewChild,  ViewContainerRef,
+import { Component, Input,  AfterViewInit, ViewChild,  ComponentRef, ViewContainerRef,
   EventEmitter, ElementRef, Output } from '@angular/core';
 
 import { Overlay} from '../../services/overlays.service';
@@ -12,6 +12,9 @@ import {MaskExtension} from '@deck.gl/extensions/typed';
 import GL from '@luma.gl/constants';
 import { RoutingService, Router } from '..';
 import { TreecoverExpansionControlComponent } from '../treecover-expansion-control/treecover-expansion-control.component';
+import { SplitterControlComponent} from '../splitter-control/splitter-control.component'
+import { AutocompleteControlComponent } from '../autocomplete-control/autocomplete-control.component';
+import { FullscreenControlComponent } from '../fullscreen-control/fullscreen-control.component';
 
 const infowindowTemplate = (featureData: any) => {
   if(featureData &&  featureData['AcqstnD'])
@@ -50,16 +53,15 @@ export class MapComponent implements AfterViewInit {
   private layers: {[id: string]: TileLayer } = {};
   private masks: {[id: string]: TileLayer | GeoJsonLayer} = {};
   public splitLng: number | null | undefined;
+  treecoverExpansionControlRef: ComponentRef<TreecoverExpansionControlComponent>;
+  splitterControlRef: ComponentRef<SplitterControlComponent>;
+  autocompleteControlRef: ComponentRef<AutocompleteControlComponent>;
+  fullscreenControlRef: ComponentRef<FullscreenControlComponent>;
 
   @Input() mapId: string;
   @Input() basemap: google.maps.MapTypeId;
   @Output() mapClick = new EventEmitter<any>();
 
-
-
-
-  splitterClicked = false;
-  splitterOffset: number;
   featureData: {[id: string]: {}} = {}
   marker: google.maps.Marker = new google.maps.Marker();
   infowindow: google.maps.InfoWindow = new google.maps.InfoWindow();
@@ -71,6 +73,10 @@ export class MapComponent implements AfterViewInit {
     private hostRef: ElementRef,
     public viewContainerRef: ViewContainerRef) {
       this.ready = false;
+      this.treecoverExpansionControlRef = this.viewContainerRef.createComponent(TreecoverExpansionControlComponent);
+      this.splitterControlRef = this.viewContainerRef.createComponent(SplitterControlComponent);
+      this.autocompleteControlRef = this.viewContainerRef.createComponent(AutocompleteControlComponent);
+      this.fullscreenControlRef =  this.viewContainerRef.createComponent(FullscreenControlComponent);
   }
 
 clickDeck(info:any, event:any) {
@@ -79,6 +85,7 @@ clickDeck(info:any, event:any) {
 
       this.infowindow.setPosition(new google.maps.LatLng(info.coordinate[1],
       info.coordinate[0]));
+      this.infowindow.setZIndex(100);
       this.infowindow.setContent("Fetching image data...");
       this.infowindow.open(this.map);
 
@@ -88,9 +95,12 @@ clickDeck(info:any, event:any) {
 
             if(info.coordinate && featureData) {
               let html = infowindowTemplate(featureData);
-              this.infowindow.setPosition(new google.maps.LatLng(info.coordinate[1],
-                                                            info.coordinate[0]));
+              this.infowindow.setPosition(
+                new google.maps.LatLng(
+                  info.coordinate[1],
+                  info.coordinate[0]));
               this.infowindow.setContent(html);
+              this.infowindow.setZIndex(100);
               this.infowindow.open(this.map);
               this.updateUrlParams()
 
@@ -100,7 +110,6 @@ clickDeck(info:any, event:any) {
           }));
 
   }
-
 
   setOverlay(overlay: Overlay) {
 
@@ -179,77 +188,44 @@ clickDeck(info:any, event:any) {
 
     this.ready = true;
 
-    const input = document.createElement('input');
-    input.placeholder = 'Search for a location';
-    input.style.margin = '5px';
-    input.style.padding = '5px';
-    input.style.border = '1pt solid gray';
-    input.style.borderRadius = '2px';
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ['(regions)'], componentRestrictions: {
-        country: 'US'
-      }
-    });
 
-    let treecoverExpansionControlElementRef = this.viewContainerRef.createComponent(TreecoverExpansionControlComponent).instance.element.nativeElement;
+    this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(this.splitterControlRef.instance.element.nativeElement);
+    this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(this.fullscreenControlRef.instance.element.nativeElement);
+    this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(this.treecoverExpansionControlRef.instance.element.nativeElement);
+    this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.autocompleteControlRef.instance.element.nativeElement);
 
 
-    let template = document.createElement('template');
-    let fullscreenHtml = `<button draggable="false" aria-label="Toggle fullscreen view" title="Toggle fullscreen view" type="button" aria-pressed="false" class="gm-control-active gm-fullscreen-control" style="background: none rgb(255, 255, 255); border: 0px; margin: 6px; padding: 0px; text-transform: none; appearance: none; position: absolute; cursor: pointer; user-select: none; border-radius: 2px; height: 24px; width: 24px; box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px; overflow: hidden; top: 0px; right: 0px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"></button>`
-    fullscreenHtml = fullscreenHtml.trim();
-    template.innerHTML = fullscreenHtml;
-    if(template.content.firstChild) {
-      const fullscreenControl: HTMLButtonElement = template.content.firstChild as HTMLButtonElement;
-      fullscreenControl.onclick = (e) => {
-        if (document.fullscreenElement) {
-          document.exitFullscreen();
-          fullscreenControl.innerHTML = `<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;">`;
-        } else {
-         document.getElementsByTagName('app-layout')[0].requestFullscreen();
-         fullscreenControl.innerHTML = `<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M4%204H0v2h6V0H4v4zm10%200V0h-2v6h6V4h-4zm-2%2014h2v-4h4v-2h-6v6zM0%2014h4v4h2v-6H0v2z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M4%204H0v2h6V0H4v4zm10%200V0h-2v6h6V4h-4zm-2%2014h2v-4h4v-2h-6v6zM0%2014h4v4h2v-6H0v2z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M4%204H0v2h6V0H4v4zm10%200V0h-2v6h6V4h-4zm-2%2014h2v-4h4v-2h-6v6zM0%2014h4v4h2v-6H0v2z%22/%3E%3C/svg%3E" alt="" style="height: 14px; width: 14px;">`
-
-        }
-        setTimeout(()=>this.updateMaskBounds(), 1000);
-
-      }
 
 
-      this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(fullscreenControl);
-      this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(treecoverExpansionControlElementRef);
 
-    }
-
-
-   this.splitterRef.nativeElement.onmousedown = (e: any) => {
+   /*this.splitterControl.onmousedown = (e: any) => {
       e.preventDefault();
       this.splitterClicked = true;
-      this.splitterOffset = this.splitterRef.nativeElement.offsetLeft - e.clientX;
+      this.splitterOffset = this.splitterControl.offsetLeft - e.clientX;
       this.updateMaskBounds();
     }
 
-    this.splitterRef.nativeElement.onmouseup =  (e:any) => {
+    this.splitterControl.onmouseup =  (e:any) => {
       this.splitterClicked = false;
       this.updateMaskBounds();
   };
 
-  this.splitterRef.nativeElement.onmousemove = (e:any) => {
+  this.splitterControl.onmousemove = (e:any) => {
       e.preventDefault();
       if (this.splitterClicked) {
         this.updateMaskBounds();
       }
-  }
+  }*/
 
 
-    this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-
-    autocomplete.addListener('place_changed', function () {
+    /* autocomplete.addListener('place_changed', function () {
       let bounds = autocomplete.getPlace().geometry?.viewport;
       if(bounds) {
         self.mapState.bounds.next(bounds);
         self.updateMaskBounds();
       }
-    });
+    });*/
 
 
 
@@ -287,8 +263,8 @@ clickDeck(info:any, event:any) {
   updateSplitLng() {
     this.splitLng = this.point2LatLng(
           new google.maps.Point(
-            this.splitterRef.nativeElement.offsetLeft+this.splitterRef.nativeElement.offsetWidth/2,
-            this.splitterRef.nativeElement.offsetHeigt/2))?.lng();
+            this.splitterControlRef.instance.element.nativeElement.offsetLeft+this.splitterControlRef.instance.element.nativeElement.offsetWidth/2,
+            this.splitterControlRef.instance.element.nativeElement.offsetHeight/2))?.lng();
   }
 
   addListeners() {
@@ -303,15 +279,15 @@ clickDeck(info:any, event:any) {
                                   );
     google.maps.event.addListener(this.map, 'mousemove', (e: google.maps.MapMouseEvent | any) => {
       let proj = this.map.getProjection();
-      if(this.splitterClicked) {
-        this.splitterRef.nativeElement.style.left = e.pixel.x + 'px';
+      if(this.splitterControlRef.instance.clicked) {
+        this.splitterControlRef.instance.element.nativeElement.style.left = e.pixel.x + 'px';
         this.updateSplitLng();
         this.updateMaskBounds();
       }
     })
 
     google.maps.event.addListener(this.map, 'mouseup', (e: any) => {
-      this.splitterClicked = false;
+      this.splitterControlRef.instance.clicked = false;
       this.updateMaskBounds();
     });
 
@@ -319,7 +295,7 @@ clickDeck(info:any, event:any) {
       this.updateMaskBounds();
     })
     google.maps.event.addListener(this.map, 'idle', (e: any) => {
-      this.splitterClicked = false;
+      this.splitterControlRef.instance.clicked = false;
       this.updateMaskBounds();
     });
 
@@ -439,13 +415,13 @@ clickDeck(info:any, event:any) {
           this.map.setCenter(new google.maps.LatLng(lat, lng));
           this.map.setZoom(z);
           this.splitLng = split;
-          let sPix = this.latLngToPixels(new google.maps.LatLng(lat, this.splitLng)) || [this.mapRef.nativeElement.offsetWidth / 2 - this.splitterRef.nativeElement.offsetWidth/2];
+          let sPix = this.latLngToPixels(new google.maps.LatLng(lat, this.splitLng)) || [this.mapRef.nativeElement.offsetWidth / 2 - this.splitterControlRef.instance.element.nativeElement.offsetWidth/2];
           let x = sPix[0];
           if(x && (x > 0 && x < this.mapRef.nativeElement.offsetWidth)) {
-            this.splitterRef.nativeElement.style.left = x + 'px';
+            this.splitterControlRef.instance.element.nativeElement.style.left = x + 'px';
 
           } else {
-            this.splitterRef.nativeElement.style.left = this.mapRef.nativeElement.offsetWidth/2-this.splitterRef.nativeElement.offsetWidth/2 + 'px';
+            this.splitterControlRef.instance.element.nativeElement.style.left = this.mapRef.nativeElement.offsetWidth/2-this.splitterControlRef.instance.element.nativeElement.offsetWidth/2 + 'px';
           }
 
         } catch(e) {}
