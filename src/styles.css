@@ -18,3 +18,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;   height: 1
 .mat-dialog-container {
   display: flex !important;
 }
+
+.mat-slider-horizontal .mat-slider-wrapper {
+  top:12px !important;
+}

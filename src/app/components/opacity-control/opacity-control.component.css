@@ -1,3 +1,8 @@
 :host {
     display: inline-block;
 }
+
+mat-slider.mat-slider-wrapper {
+  top: 0px;
+}
+

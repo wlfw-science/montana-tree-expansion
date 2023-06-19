@@ -14,7 +14,7 @@ export class TreecoverExpansionControlComponent implements OnInit {
   ngOnInit(): void {
     this.mapState.overlays.subscribe(
       (overlays) => {
-        let overlay = overlays.find((o)=> o.value.id === 'montana-treecover-expansion')?.value;
+        let overlay = overlays.find((o)=> o.value.id === 'treecover')?.value;
 
         if(overlay) {
           this.overlay = overlay;

@@ -1,5 +1,4 @@
 import { GoogleMapsOverlay } from '@deck.gl/google-maps/typed';
-import { BehaviorSubject } from 'rxjs';
 
 const default_opacity = 0.6;
 
