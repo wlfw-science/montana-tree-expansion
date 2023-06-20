@@ -430,7 +430,7 @@ clickDeck(info:any, event:any) {
     if(mlat && mlng) {
       google.maps.event.trigger(this.map, 'click', {latLng: new google.maps.LatLng(mlat,mlng)});
     }
-    let z = parseFloat(queryParams['z'] || '5.5');
+    let z = parseInt(queryParams['z'] || '5');
     let split = parseFloat(queryParams['s'] || lng);
 
 
