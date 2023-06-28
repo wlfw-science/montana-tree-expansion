@@ -182,11 +182,12 @@ clickDeck(info:any, event:any) {
     const input = document.createElement('input');
     input.placeholder = 'Search for a location';
     input.style.margin = '5px';
+    input.style.width = '150px';
     input.style.padding = '5px';
     input.style.border = '1pt solid gray';
     input.style.borderRadius = '2px';
     const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ['(regions)'], componentRestrictions: {
+      types: ['geocode'], componentRestrictions: {
         country: 'US'
       }
     });
