@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Location } from '@angular/common';
 
+const VALID_PARAMS = ["ll", "sl", "z"]
 
 @Injectable()
 export class RoutingService  {
@@ -44,6 +45,11 @@ export class RoutingService  {
       this.router.navigateByUrl(newUrl, {replaceUrl: true, skipLocationChange: false});
       this.urlSubject.next(newUrl.toString());
     }
+
+    let postMessage ='updateUrlParams:' + this.router.url;
+    console.log(postMessage);
+    window.parent.postMessage(postMessage, '*');
+
   }
 
   private cleanParams(params: any) {
@@ -51,7 +57,7 @@ export class RoutingService  {
     * Strips out empty query params.
     */
     const newParams: {[key:string] : string | number} = {}
-    Object.keys(params).filter(key => params[key] || params[key] === 0).forEach(
+    Object.keys(params).filter(key => (params[key] || params[key] === 0) && VALID_PARAMS.includes(key)).forEach(
       key => newParams[key] = params[key]);
     return newParams;
   }

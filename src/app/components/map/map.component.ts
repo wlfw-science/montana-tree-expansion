@@ -11,7 +11,6 @@ import {MaskExtension} from '@deck.gl/extensions/typed';
 
 import GL from '@luma.gl/constants';
 import { RoutingService, Router } from '..';
-import { TreecoverExpansionControlComponent } from '../treecover-expansion-control/treecover-expansion-control.component';
 
 const infowindowTemplate = (featureData: any) => {
   if(featureData &&  featureData['AcqstnD'])
@@ -171,6 +170,7 @@ clickDeck(info:any, event:any) {
         position: google.maps.ControlPosition.LEFT_TOP
       },
       controlSize: 24,
+      //gestureHandling: 'greedy',
       mapId: '516b298e48f19bed'
     };
 
@@ -191,8 +191,6 @@ clickDeck(info:any, event:any) {
         country: 'US'
       }
     });
-
-    let treecoverExpansionControlElementRef = this.viewContainerRef.createComponent(TreecoverExpansionControlComponent).instance.element.nativeElement;
 
 
     let template = document.createElement('template');
@@ -216,7 +214,6 @@ clickDeck(info:any, event:any) {
 
 
       this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(fullscreenControl);
-      this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(treecoverExpansionControlElementRef);
 
     }
 
@@ -432,7 +429,7 @@ clickDeck(info:any, event:any) {
       google.maps.event.trigger(this.map, 'click', {latLng: new google.maps.LatLng(mlat,mlng)});
     }
     let z = parseInt(queryParams['z'] || '5');
-    let split = parseFloat(queryParams['s'] || lng);
+    let split = parseFloat(queryParams['sl'] || lng);
 
 
     setTimeout(() => {
@@ -459,10 +456,9 @@ clickDeck(info:any, event:any) {
     const params: {[key:string]: string | number | undefined} = {};
     params['ll'] = [this.map.getCenter()?.lat().toFixed(16), this.map.getCenter()?.lng().toFixed(16)].join(',');
     params['z'] = this.map.getZoom()?.toString();
-    params['s'] = this.splitLng ? this.splitLng.toFixed(16) : this.map.getCenter()?.lng().toFixed(16);
+    params['sl'] = this.splitLng ? this.splitLng.toFixed(16) : this.map.getCenter()?.lng().toFixed(16);
     //params['mll'] = [this.infowindow.getPosition()?.lat().toFixed(16),  this.infowindow.getPosition()?.lng().toFixed(16)].join(',')
     this.routing.updateUrlParams(params);
-    window.parent.postMessage(JSON.stringify(this.router.parseUrl(this.router.url).queryParams), '*');
   }
 
   clearListeners() {
