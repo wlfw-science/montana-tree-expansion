@@ -20,6 +20,9 @@ import { OpacityControlComponent } from './components/opacity-control/opacity-co
 import { OverlayToggleControlComponent } from './components/overlay-toggle-control/overlay-toggle-control.component';
 import { TreecoverExpansionControlComponent } from './components/treecover-expansion-control/treecover-expansion-control.component';
 import { LinkifyPipe } from './pipes/linkify.pipe';
+import { SplitterControlComponent } from './components/splitter-control/splitter-control.component';
+import { AutocompleteControlComponent } from './components/autocomplete-control/autocomplete-control.component';
+import { FullscreenControlComponent } from './components/fullscreen-control/fullscreen-control.component';
 
 export function googleApisLoaderFactory(
   googleMapsApi: GoogleMapsLoaderService) {
@@ -34,7 +37,10 @@ export function googleApisLoaderFactory(
     OpacityControlComponent,
     OverlayToggleControlComponent,
     TreecoverExpansionControlComponent,
-    LinkifyPipe
+    LinkifyPipe,
+    SplitterControlComponent,
+    AutocompleteControlComponent,
+    FullscreenControlComponent
   ],
   imports: [
     BrowserModule,
