@@ -82,7 +82,7 @@ clickDeck(info:any, event:any) {
       this.infowindow.setContent("Fetching image data...");
       this.infowindow.open(this.map);
 
-      fetch(`https://historical-imagery-zgxwzchaia-uc.a.run.app/?lat=${lat}&lng=${lng}`)
+      fetch(`https://us-central1-wlfw-website.cloudfunctions.net/historical-imagery?lat=${lat}&lng=${lng}`)
         .then(response => response.json().then(
           featureData => {
 
@@ -422,16 +422,16 @@ clickDeck(info:any, event:any) {
   loadUrlParams() {
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
     let ll = queryParams['ll'];
-    let lat = ll ? ll.split(',')[0]: 46.4;
-    let lng = ll ? ll.split(',')[1]: -110;
-    let mll = queryParams['mll'];
+    let lat = ll ? ll.split(',')[0]: 46.7202540513347202;
+    let lng = ll ? ll.split(',')[1]: -111.1498380657958620;
+    /*let mll = queryParams['mll'];
     let mlat = mll ? mll.split(',')[0]: null;
     let mlng = mll ? mll.split(',')[1]: null;
     if(mlat && mlng) {
       google.maps.event.trigger(this.map, 'click', {latLng: new google.maps.LatLng(mlat,mlng)});
-    }
+    }*/
     let z = parseInt(queryParams['z'] || '7');
-    let split = parseFloat(queryParams['s'] || lng);
+    let split = parseFloat(queryParams['sl'] || lng);
 
 
     setTimeout(() => {
@@ -456,9 +456,9 @@ clickDeck(info:any, event:any) {
 
   updateUrlParams() {
     const params: {[key:string]: string | number | undefined} = {};
-    params['ll'] = [this.map.getCenter()?.lat().toFixed(16) || 46.4, this.map.getCenter()?.lng().toFixed(16)|| -111.4].join(',');
-    params['z'] = this.map.getZoom()?.toString() || '14';
-    params['s'] = this.splitLng ? this.splitLng.toFixed(16) : this.map.getCenter()?.lng().toFixed(16);
+    params['ll'] = [this.map.getCenter()?.lat().toFixed(16) || 40.4, this.map.getCenter()?.lng().toFixed(16)|| -111.4].join(',');
+    params['z'] = this.map.getZoom()?.toString() || '7';
+    params['sl'] = this.splitLng ? this.splitLng.toFixed(16) : this.map.getCenter()?.lng().toFixed(16);
     params['mll'] = [this.infowindow.getPosition()?.lat().toFixed(16),  this.infowindow.getPosition()?.lng().toFixed(16)].join(',')
     this.routing.updateUrlParams(params);
     window.parent.postMessage(JSON.stringify(this.router.parseUrl(this.router.url).queryParams), '*');

@@ -11,7 +11,7 @@ export class AppComponent {
   featureLayers = {};
   overlays = [new Overlay({
                 id: 'imagery',
-                name: 'Montana Historical Imagery',
+                name: 'CONUS West Historical Imagery',
                 opacity: 1.0,
                 visible: true,
                 showControl: false,
@@ -20,7 +20,7 @@ export class AppComponent {
                 maxNativeZoom: 16,
                 type: {
                   format: 'XYZ',
-                  name: 'Historical Imagery',
+                  name: 'Montana Historical Imagery',
                   id: 'mt-hist',
                   tileurl: 'https://storage.googleapis.com/montana-historical-imagery/v1/{z}/{x}/{y}.png'} ,
                 bounds: new google.maps.LatLngBounds(
@@ -46,6 +46,7 @@ export class AppComponent {
                     new google.maps.LatLng( 55.12908567856297 ,  -96.300538948688 )),
 
               })
+
   ];
 
 
