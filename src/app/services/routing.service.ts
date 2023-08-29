@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Location } from '@angular/common';
 
-const VALID_PARAMS = ["ll", "sl", "z"]
+const VALID_PARAMS = ["ll", "sl", "z", "b"]
 
 @Injectable()
 export class RoutingService  {
@@ -47,7 +47,6 @@ export class RoutingService  {
     }
 
     let postMessage ='updateUrlParams:' + this.router.url;
-    console.log(postMessage);
     window.parent.postMessage(postMessage, '*');
 
   }

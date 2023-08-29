@@ -157,7 +157,7 @@ clickDeck(info:any, event:any) {
 
   ngAfterViewInit() {
 
-    const self = this, mapProp = {
+    const self = this, mapProp: google.maps.MapOptions = {
 
       fullscreenControl: false,
       streetViewControl: false,
@@ -182,7 +182,7 @@ clickDeck(info:any, event:any) {
     const input = document.createElement('input');
     input.placeholder = 'Search for a location';
     input.style.margin = '5px';
-    input.style.width = '150px';
+    input.style.width = '200px';
     input.style.padding = '5px';
     input.style.border = '1pt solid gray';
     input.style.borderRadius = '2px';
@@ -217,27 +217,6 @@ clickDeck(info:any, event:any) {
 
     }
 
-
-   this.splitterRef.nativeElement.onmousedown = (e: any) => {
-      e.preventDefault();
-      this.splitterClicked = true;
-      this.splitterOffset = this.splitterRef.nativeElement.offsetLeft - e.clientX;
-      this.updateMaskBounds();
-    }
-
-    this.splitterRef.nativeElement.onmouseup =  (e:any) => {
-      this.splitterClicked = false;
-      this.updateMaskBounds();
-  };
-
-  this.splitterRef.nativeElement.onmousemove = (e:any) => {
-      e.preventDefault();
-      if (this.splitterClicked) {
-        this.updateMaskBounds();
-      }
-  }
-
-
     this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
 
@@ -248,6 +227,7 @@ clickDeck(info:any, event:any) {
         self.updateMaskBounds();
       }
     });
+
 
 
 
@@ -268,6 +248,37 @@ clickDeck(info:any, event:any) {
     this.loadUrlParams();
 
   }
+
+
+splitterPointerDown(e: any) {
+
+    this.splitterClicked = true;
+    this.updateMaskBounds();
+}
+
+splitterPointerUp (e:any)  {
+    this.splitterClicked = false;
+};
+
+splitterPointerMove(e:any) {
+    if(e.preventDefault) {
+      e.preventDefault();
+    }
+    if (this.splitterClicked == true) {
+      if(e.pixel && e.pixel.x) {
+        this.splitterRef.nativeElement.style.left = e.pixel.x-this.splitterRef.nativeElement.clientWidth/2 + 'px';
+      }
+      else if(e.x) {
+        this.splitterRef.nativeElement.style.left = e.x-this.splitterRef.nativeElement.clientWidth/2 + 'px';
+      } else if(e.touches) {
+          this.splitterRef.nativeElement.style.left = e.touches[0].clientX + 'px';
+      }
+      this.updateSplitLng();
+      this.updateMaskBounds();
+    }
+
+}
+
 
   point2LatLng(point: google.maps.Point) {
     let p = this.map.getProjection(), b = this.map.getBounds(), z = this.map.getZoom() ;
@@ -300,13 +311,22 @@ clickDeck(info:any, event:any) {
                                     }
                                   );
     google.maps.event.addListener(this.map, 'mousemove', (e: google.maps.MapMouseEvent | any) => {
-      let proj = this.map.getProjection();
-      if(this.splitterClicked) {
-        this.splitterRef.nativeElement.style.left = e.pixel.x + 'px';
-        this.updateSplitLng();
-        this.updateMaskBounds();
-      }
-    })
+        if(this.splitterClicked) {
+          this.splitterPointerMove(e);
+        } else {
+          this.updateMaskBounds();
+        }
+
+    });
+    google.maps.event.addListener(this.map, 'maptypeid_changed', ()=> {
+      this.updateUrlParams()
+    });
+
+    google.maps.event.addListener(this.map, 'mousedown', (e: google.maps.MapMouseEvent | any) => {
+      this.splitterClicked = true;
+      this.updateMaskBounds();
+
+  });
 
     google.maps.event.addListener(this.map, 'mouseup', (e: any) => {
       this.splitterClicked = false;
@@ -314,6 +334,7 @@ clickDeck(info:any, event:any) {
     });
 
     google.maps.event.addListener(this.map, 'zoom_changed', (e: any) => {
+      this.splitterClicked = false;
       this.updateMaskBounds();
     })
     google.maps.event.addListener(this.map, 'idle', (e: any) => {
@@ -425,6 +446,7 @@ clickDeck(info:any, event:any) {
     let mll = queryParams['mll'];
     let mlat = mll ? mll.split(',')[0]: null;
     let mlng = mll ? mll.split(',')[1]: null;
+    let basemap =  queryParams['b'] ? queryParams['b'] : 'satellite';
     if(mlat && mlng) {
       google.maps.event.trigger(this.map, 'click', {latLng: new google.maps.LatLng(mlat,mlng)});
     }
@@ -437,6 +459,7 @@ clickDeck(info:any, event:any) {
           this.map.setCenter(new google.maps.LatLng(lat, lng));
           this.map.setZoom(z);
           this.splitLng = split;
+          this.map.setMapTypeId(basemap);
           let sPix = this.latLngToPixels(new google.maps.LatLng(lat, this.splitLng)) || [this.mapRef.nativeElement.offsetWidth / 2 - this.splitterRef.nativeElement.offsetWidth/2];
           let x = sPix[0];
           if(x && (x > 0 && x < this.mapRef.nativeElement.offsetWidth)) {
@@ -456,6 +479,7 @@ clickDeck(info:any, event:any) {
     const params: {[key:string]: string | number | undefined} = {};
     params['ll'] = [this.map.getCenter()?.lat().toFixed(16), this.map.getCenter()?.lng().toFixed(16)].join(',');
     params['z'] = this.map.getZoom()?.toString();
+    params['b'] = this.map.getMapTypeId();
     params['sl'] = this.splitLng ? this.splitLng.toFixed(16) : this.map.getCenter()?.lng().toFixed(16);
     //params['mll'] = [this.infowindow.getPosition()?.lat().toFixed(16),  this.infowindow.getPosition()?.lng().toFixed(16)].join(',')
     this.routing.updateUrlParams(params);

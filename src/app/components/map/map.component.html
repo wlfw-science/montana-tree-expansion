@@ -1,4 +1,11 @@
 <div class="map" #map></div>
-<div class="splitter" #splitter></div>
+<div class="splitter"
+     #splitter
+     (touchmove)="splitterPointerMove($event)"
+     (touchstart)="splitterPointerDown($event)"
+     (touchend)="splitterPointerUp($event)"
+     (mousemove)="splitterPointerMove($event)"
+     (mousedown)="splitterPointerDown($event)"
+     (mouseup)="splitterPointerUp($event)"></div>
 
 
