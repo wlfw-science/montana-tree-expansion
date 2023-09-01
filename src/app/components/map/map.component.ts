@@ -42,6 +42,7 @@ const infowindowTemplate = (featureData: any) => {
 export class MapComponent implements AfterViewInit {
   @ViewChild('map') mapRef: ElementRef;
   @ViewChild('splitter') splitterRef: ElementRef;
+  @ViewChild('handle') handleRef: ElementRef;
 
   private ready: boolean;
   private map: google.maps.Map;
@@ -164,6 +165,7 @@ clickDeck(info:any, event:any) {
       mapTypeId: this.basemap,
       scaleControl: true,
       tilt: 0,
+      heading: 0,
       minZoom: 4,
       maxZoom: 20,
       zoomControlOptions: {
@@ -187,9 +189,8 @@ clickDeck(info:any, event:any) {
     input.style.border = '1pt solid gray';
     input.style.borderRadius = '2px';
     const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ['geocode'], componentRestrictions: {
-        country: 'US'
-      }
+      types: [],
+      componentRestrictions: {country: 'US'}
     });
 
 
@@ -258,6 +259,8 @@ splitterPointerDown(e: any) {
 
 splitterPointerUp (e:any)  {
     this.splitterClicked = false;
+
+
 };
 
 splitterPointerMove(e:any) {
@@ -323,10 +326,26 @@ splitterPointerMove(e:any) {
     });
 
     google.maps.event.addListener(this.map, 'mousedown', (e: google.maps.MapMouseEvent | any) => {
-      this.splitterClicked = true;
+
       this.updateMaskBounds();
 
   });
+
+  google.maps.event.addListener(this.map, 'heading_changed', (e: google.maps.MapMouseEvent | any) => {
+
+    if(this.map.getHeading()!==0) {
+      console.log('setting heading to 0')
+      setTimeout(()=> this.map.setHeading(0), 200);
+    }
+});
+
+google.maps.event.addListener(this.map, 'tilt_changed', (e: google.maps.MapMouseEvent | any) => {
+
+  if(this.map.getTilt() !== 0) {
+    console.log('setting tilt to 0')
+    setTimeout(()=>this.map.setTilt(0), 200);
+  }
+});
 
     google.maps.event.addListener(this.map, 'mouseup', (e: any) => {
       this.splitterClicked = false;

@@ -4,6 +4,7 @@
 @import '//fonts.googleapis.com/css?family=IM+Fell+English';
 @import '//fonts.googleapis.com/icon?family=Material+Icons';
 
+
 html, body { height: 100%;  }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;   height: 100%;
   width: 100%;}
@@ -21,4 +22,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;   height: 1
 
 .mat-slider-horizontal .mat-slider-wrapper {
   top:12px !important;
+}
+
+.pac-container, .pac-item{
+  z-index: 2147483647 !important;
 }

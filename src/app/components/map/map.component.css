@@ -17,14 +17,45 @@
   position: absolute;
   pointer-events: auto;
   height: 100%;
-  width: 12px;
+  width: 5px;
   z-index: 100;
-  background-color: #eee;
-  background-repeat: no-repeat;
-  background-position: 50%;
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==");
+
+  background-color: whitesmoke;
   cursor: col-resize;
+  overflow: visible;
 }
+
+.handle {
+  position: relative;
+  top: 50%;
+  margin: 0 auto;
+  width: 45px;
+  height: 45px;
+  margin-top: -25px;
+  margin-left: -25px;
+  border-radius: 52px;
+  color: darkgray;
+  font-size: 20pt;
+  padding-left: -5px;
+  border: 2pt solid lightgray;
+  background-color: whitesmoke;
+  cursor: grab;
+  transition: scale 0.2s;
+  white-space: nowrap;
+  text-align: center;
+
+}
+mat-icon {
+  padding:0;
+}
+
+.handle-active {
+  scale: 0.75;
+  cursor: grabbing
+
+}
+
+
 
 app-landcover-control {
   position: absolute;
