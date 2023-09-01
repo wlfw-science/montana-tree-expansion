@@ -31,11 +31,10 @@
   margin: 0 auto;
   width: 45px;
   height: 45px;
-  margin-top: -25px;
-  margin-left: -25px;
+  margin-top: -23px;
+  margin-left: -23px;
   border-radius: 52px;
   color: darkgray;
-  font-size: 20pt;
   padding-left: -5px;
   border: 2pt solid lightgray;
   background-color: whitesmoke;
@@ -46,7 +45,9 @@
 
 }
 mat-icon {
-  padding:0;
+  position: relative;
+  left: -11px;
+  top: -2px;
 }
 
 .handle-active {
