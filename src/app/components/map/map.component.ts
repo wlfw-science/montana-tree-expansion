@@ -167,7 +167,7 @@ clickDeck(info:any, event:any) {
       tilt: 0,
       heading: 0,
       minZoom: 4,
-      maxZoom: 20,
+      maxZoom: 16,
       zoomControlOptions: {
         position: google.maps.ControlPosition.LEFT_TOP
       },
@@ -338,6 +338,24 @@ splitterPointerMove(e:any) {
       setTimeout(()=> this.map.setHeading(0), 200);
     }
 });
+
+
+document.onfullscreenchange = function ( event: any ) {
+  let target = event.target;
+  let pacContainerElements = document.getElementsByClassName("pac-container");
+  if (pacContainerElements.length > 0) {
+      let pacContainer = document.getElementsByClassName("pac-container")[0];
+      if (pacContainer.parentElement === target) {
+          console.log("Exiting FULL SCREEN - moving pacContainer to body");
+          document.getElementsByTagName("body")[0].appendChild(pacContainer);
+      } else {
+          console.log("Entering FULL SCREEN - moving pacContainer to target element");
+          target.appendChild(pacContainer);
+      }
+  } else {
+      console.log("FULL SCREEN change - no pacContainer found");
+
+  }};
 
 google.maps.event.addListener(this.map, 'tilt_changed', (e: google.maps.MapMouseEvent | any) => {
 
