@@ -175,11 +175,12 @@ clickDeck(info:any, event:any) {
       //gestureHandling: 'greedy',
       mapId: '516b298e48f19bed'
     };
+    this.ready = true;
 
     this.map = new google.maps.Map(this.mapRef.nativeElement, mapProp);
 
 
-    this.ready = true;
+
 
     const input = document.createElement('input');
     input.placeholder = 'Search for a location';
@@ -247,6 +248,7 @@ clickDeck(info:any, event:any) {
 
     this.addListeners();
     this.loadUrlParams();
+
 
   }
 
@@ -483,7 +485,7 @@ google.maps.event.addListener(this.map, 'tilt_changed', (e: google.maps.MapMouse
     let mll = queryParams['mll'];
     let mlat = mll ? mll.split(',')[0]: null;
     let mlng = mll ? mll.split(',')[1]: null;
-    let basemap =  queryParams['b'] ? queryParams['b'] : 'satellite';
+    let basemap =  queryParams['b'] ? queryParams['b'] : 'hybrid';
     if(mlat && mlng) {
       google.maps.event.trigger(this.map, 'click', {latLng: new google.maps.LatLng(mlat,mlng)});
     }
