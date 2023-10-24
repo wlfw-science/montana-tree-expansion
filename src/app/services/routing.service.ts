@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Location } from '@angular/common';
 
-const VALID_PARAMS = ["ll", "sl", "z", "b"]
+const VALID_PARAMS = ["ll", "sl", "z", "b", "t_o"]
 
 @Injectable()
 export class RoutingService  {

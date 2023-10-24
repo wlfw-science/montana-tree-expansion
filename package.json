@@ -17,6 +17,8 @@
     "@angular/platform-browser": "~13.1.0",
     "@angular/platform-browser-dynamic": "~13.1.0",
     "@angular/router": "~13.1.0",
+    "@turf/boolean-contains": "^6.5.0",
+    "@turf/intersect": "^6.5.0",
     "@types/geojson": "^7946.0.10",
     "deck.gl": "^8.8.11",
     "rxjs": "~7.4.0",

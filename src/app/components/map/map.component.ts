@@ -1,16 +1,20 @@
 
-import { Component, Input,  AfterViewInit, ViewChild,  ViewContainerRef,
+import { Component, Input,  AfterViewInit, ViewChild,  ComponentRef, ViewContainerRef,
   EventEmitter, ElementRef, Output } from '@angular/core';
-
+import { TreecoverExpansionControlComponent } from '../treecover-expansion-control/treecover-expansion-control.component';
 import { Overlay} from '../../services/overlays.service';
 import { MapStateService } from '../../services/map-state.service';
 import { GoogleMapsOverlay } from '@deck.gl/google-maps/typed';
 import {BitmapLayer,GeoJsonLayer} from '@deck.gl/layers/typed';
-import {TileLayer, _Tile2DHeader} from '@deck.gl/geo-layers/typed';
+import {TileLayer } from '@deck.gl/geo-layers/typed';
 import {MaskExtension} from '@deck.gl/extensions/typed';
 
 import GL from '@luma.gl/constants';
 import { RoutingService, Router } from '..';
+import booleanContains from '@turf/boolean-contains';
+import { Point, Polygon, Feature } from 'geojson';
+import * as  montana from './montana.json'
+
 
 const infowindowTemplate = (featureData: any) => {
   if(featureData &&  featureData['AcqstnD'])
@@ -55,14 +59,13 @@ export class MapComponent implements AfterViewInit {
   @Input() basemap: google.maps.MapTypeId;
   @Output() mapClick = new EventEmitter<any>();
 
-
-
-
   splitterClicked = false;
   splitterOffset: number;
   featureData: {[id: string]: {}} = {}
+
   marker: google.maps.Marker = new google.maps.Marker();
   infowindow: google.maps.InfoWindow = new google.maps.InfoWindow();
+  treecoverExpansionControlRef: ComponentRef<TreecoverExpansionControlComponent>;
 
   constructor(
     private mapState: MapStateService,
@@ -71,33 +74,42 @@ export class MapComponent implements AfterViewInit {
     private hostRef: ElementRef,
     public viewContainerRef: ViewContainerRef) {
       this.ready = false;
+      this.treecoverExpansionControlRef = this.viewContainerRef.createComponent(TreecoverExpansionControlComponent);
   }
 
-clickDeck(info:any, event:any) {
+clickDeck(info: any, event:any) {
       let lat = info.coordinate[1],
-          lng = info.coordinate[0];
+          lng = info.coordinate[0],
+          point: Feature<Point> = {'type': 'Feature', 'properties': null, 'geometry': {'type': 'Point', 'coordinates': [lng, lat]}};
+
+
 
       this.infowindow.setPosition(new google.maps.LatLng(info.coordinate[1],
       info.coordinate[0]));
-      this.infowindow.setContent("Fetching image data...");
-      this.infowindow.open(this.map);
 
-      fetch(`https://us-central1-wlfw-website.cloudfunctions.net/historical-imagery?lat=${lat}&lng=${lng}`)
-        .then(response => response.json().then(
-          featureData => {
 
-            if(info.coordinate && featureData) {
-              let html = infowindowTemplate(featureData);
-              this.infowindow.setPosition(new google.maps.LatLng(info.coordinate[1],
-                                                            info.coordinate[0]));
-              this.infowindow.setContent(html);
-              this.infowindow.open(this.map);
-              this.updateUrlParams()
+      if(booleanContains(montana as Feature<Polygon>, point)) {
+        this.infowindow.setContent("Fetching image data...");
+        this.infowindow.open(this.map);
+        fetch(`https://us-central1-wlfw-website.cloudfunctions.net/historical-imagery?lat=${lat}&lng=${lng}`)
+          .then(response => response.json().then(
+            featureData => {
 
-            }  else {
-              this.infowindow.close();
-            }
-          }));
+              if(info.coordinate && featureData) {
+                let html = infowindowTemplate(featureData);
+                this.infowindow.setPosition(new google.maps.LatLng(info.coordinate[1],
+                                                              info.coordinate[0]));
+                this.infowindow.setContent(html);
+                this.infowindow.open(this.map);
+                this.updateUrlParams()
+
+              }  else {
+                this.infowindow.close();
+              }
+            }));
+        } else {
+          this.infowindow.close();
+        }
 
   }
 
@@ -119,7 +131,7 @@ clickDeck(info:any, event:any) {
 
                 renderSubLayers: (props) => {
                   const {
-                    boundingBox: [[west, south], [east, north]]
+                    boundingBox : [[west, south], [east, north]]
                   } = props.tile;
 
                   return new BitmapLayer(props, {
@@ -216,7 +228,7 @@ clickDeck(info:any, event:any) {
 
 
       this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(fullscreenControl);
-
+      this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(this.treecoverExpansionControlRef.instance.element.nativeElement);
     }
 
     this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
