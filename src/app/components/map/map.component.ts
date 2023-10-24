@@ -202,7 +202,13 @@ clickDeck(info: any, event:any) {
     input.style.border = '1pt solid gray';
     input.style.borderRadius = '2px';
     const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: [],
+      bounds: {
+        west: -116.0500062762746154,
+        south: 44.3548569904840662,
+        east: -104.0486893426618167,
+        north: 49.0001
+      },
+      strictBounds: true,
       componentRestrictions: {country: 'US'}
     });
 
@@ -492,8 +498,8 @@ google.maps.event.addListener(this.map, 'tilt_changed', (e: google.maps.MapMouse
   loadUrlParams() {
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
     let ll = queryParams['ll'];
-    let lat = ll ? ll.split(',')[0]: 40.4;
-    let lng = ll ? ll.split(',')[1]: -110;
+    let lat = ll ? ll.split(',')[0]: 46.9104874623627310;
+    let lng = ll ? ll.split(',')[1]: -109.6824646298715180;
     let mll = queryParams['mll'];
     let mlat = mll ? mll.split(',')[0]: null;
     let mlng = mll ? mll.split(',')[1]: null;
@@ -501,7 +507,7 @@ google.maps.event.addListener(this.map, 'tilt_changed', (e: google.maps.MapMouse
     if(mlat && mlng) {
       google.maps.event.trigger(this.map, 'click', {latLng: new google.maps.LatLng(mlat,mlng)});
     }
-    let z = parseInt(queryParams['z'] || '5');
+    let z = parseInt(queryParams['z'] || '7');
     let split = parseFloat(queryParams['sl'] || lng);
 
 
